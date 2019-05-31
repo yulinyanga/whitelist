@@ -4,7 +4,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface TRSSearchService {
-//    public String importWhiteList();
-
-
+    //public String importWhiteList();
 }

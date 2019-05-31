@@ -1,8 +1,6 @@
 #端口号与网页前缀
 server:
   port: 8080
-  servlet:
-    context-path: /web
 spring:
   ## jsp支持
   mvc:
