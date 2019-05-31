@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%
-String path = request.getContextPath();
+	String path = request.getContextPath();
 //String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 	String basePath = path+"/";
 %>
@@ -16,26 +16,35 @@ String path = request.getContextPath();
 	<script src="jquery-2.1.1.min.js"></script>
 	<script src="jquery.min.js"></script>
 	<script src="layui/layui.js" charset="utf-8"></script>
-	
+
 </head>
 <body>
-	<div>
-		<form id="exportForm" action="">
-			<span>用户名：</span>
-			<input type="text" name="username" />
-			<input type="file" id="keyword" name="file" lay-title="上传关键词" lay-type="file" class="layui-upload-file" />
-			<input type="file" id="sitelist" name="file" lay-title="上传目标网站" lay-type="file" class="layui-upload-file" />
-			<input type="file" id="whitelist" name="file" lay-title="上传白名单" lay-type="file" class="layui-upload-file" />
-			<br><br>
-			<input id="web" name="leibie" type="radio" checked="checked" style="margin-left: 270px" />网站
-			<input id="weibo" name="leibie" type="radio"/>微博
-			<input id="weixin" name="leibie" type="radio"/>微信
-			<input type="button" id="export" name="export" value="导出数据" onclick="exportData()" />
-		</form>
-	</div>
+<div>
+	<form id="exportForm" action="">
+		<br>
+		<span>&nbsp;&nbsp;&nbsp;&nbsp;用户名：</span>
+		<input type="text" name="userName" />
+		<br><br>
+		<span>&nbsp;&nbsp;&nbsp;&nbsp;关键词：</span>
+		<textarea name="keyWord" style="height: 160px;width: 400px;"></textarea>
+		<br><br>
+		<span>目标网站：</span>
+		<textarea name="siteList" style="height: 160px;width: 400px;"></textarea>
+		<br><br>
+		<span>网站类别：</span>
+		<input id="web" name="siteType" type="radio" checked="checked" value="1" />普通网站
+		<input id="weibo" name="siteType" type="radio" value="2" />微博
+		<input id="weixin" name="siteType" type="radio" value="3" />微信
+		<br><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="file" id="whitelist" name="file" lay-title="上传白名单" lay-type="file" class="layui-upload-file" />
+		<input type="button" id="export" name="export" value="导出数据" onclick="exportData()" class="layui-btn layui-btn-normal" style="margin-left: 40px;" />
+	</form>
+</div>
+
 </body>
 <script type="text/javascript">
-	
+
 	function exportData(){
 		$("#exportForm").submit();
 	}
@@ -44,96 +53,32 @@ String path = request.getContextPath();
 <script>
 	layui.use('upload', function(){
 		layui.upload({
-		url: ''
-		,ext: 'txt'
-		, dataType: "json"
-		,before: function(input){
-			//返回的参数item，即为当前的input DOM对象
-			console.log('文件上传中');
-		}
-		,elem: '#keyword' //指定原始元素，默认直接查找class="layui-upload-file"
-		,method: 'POST' //上传接口的http类型
-		,success: function(res){
-			if(res.code ==1){
-				layer.open({
+			url: ''
+			,ext: 'xls|xlsx'
+			, dataType: "json"
+			,before: function(input){
+				//返回的参数item，即为当前的input DOM对象
+				console.log('文件上传中');
+			}
+			,elem: '#whitelist' //指定原始元素，默认直接查找class="layui-upload-file"
+			,method: 'POST' //上传接口的http类型
+			,success: function(res){
+				if(res.code ==1){
+					layer.open({
 						title: '提示'
 						,content: '导入成功'
 					});
-				documentinfoinit();
-			}else{
-				layer.open({
+					documentinfoinit();
+				}else{
+					layer.open({
 						title: '提示'
 						,content: res.message
 					});
-				documentinfoinit();
+					documentinfoinit();
 				}
-	
+
 			}
 		});
 	});
-	
-</script>
-<script>
-	layui.use('upload', function(){
-		layui.upload({
-		url: ''
-		,ext: 'xls|xlsx'
-		, dataType: "json"
-		,before: function(input){
-			//返回的参数item，即为当前的input DOM对象
-			console.log('文件上传中');
-		}
-		,elem: '#sitelist' //指定原始元素，默认直接查找class="layui-upload-file"
-		,method: 'POST' //上传接口的http类型
-		,success: function(res){
-			if(res.code ==1){
-				layer.open({
-						title: '提示'
-						,content: '导入成功'
-					});
-				documentinfoinit();
-			}else{
-				layer.open({
-						title: '提示'
-						,content: res.message
-					});
-				documentinfoinit();
-				}
-	
-			}
-		});
-	});
-	
-</script>
-<script>
-	layui.use('upload', function(){
-		layui.upload({
-		url: ''
-		,ext: 'xls|xlsx'
-		, dataType: "json"
-		,before: function(input){
-			//返回的参数item，即为当前的input DOM对象
-			console.log('文件上传中');
-		}
-		,elem: '#whitelist' //指定原始元素，默认直接查找class="layui-upload-file"
-		,method: 'POST' //上传接口的http类型
-		,success: function(res){
-			if(res.code ==1){
-				layer.open({
-						title: '提示'
-						,content: '导入成功'
-					});
-				documentinfoinit();
-			}else{
-				layer.open({
-						title: '提示'
-						,content: res.message
-					});
-				documentinfoinit();
-				}
-	
-			}
-		});
-	});
-	
+
 </script>
