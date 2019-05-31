@@ -1,6 +1,6 @@
 package com.trs.zhq.entity;
 
-public class WeiBuo {
+public class WeiBo {
 	private String IR_CREATED_AT;
 	private String IR_MID;
 	private String IR_SITENAME;

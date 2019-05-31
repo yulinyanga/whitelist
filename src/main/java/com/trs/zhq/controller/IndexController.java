@@ -1,13 +1,16 @@
 package com.trs.zhq.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
+@Controller("/")
 public class IndexController {
 
 
+    @RequestMapping("index")
     public String ImportFile(){
-        return "";
+        System.out.println(111);
+        return "index";
     }
 
 }

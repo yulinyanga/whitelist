@@ -8,45 +8,45 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 /**
- * Êı¾İ¿âÁ¬½Ó
+ * æ•°æ®åº“è¿æ¥
  *
  * @author Hermes
  */
 public class DBConnector {
-    //todo ÔÚµ¼³öÇ°¸üĞÂ ip ¿âÃû Êı¾İ¿âÀàĞÍ ±í´ïÊ½ ´æ·ÅÂ·¾¶(desktop¡¢countFile¡¢detailFile¡¢logPath)
-//    private final static String DB_URL = "localhost";      //TRSServerÊı¾İ¿âURL
-//    private final static String DB_URL = "10.72.77.90";	  //TRSServerÊı¾İ¿âURL
-    //private final static String DB_URL = "10.72.76.187";	  //TRSServerÊı¾İ¿âURL
-//    private final static String DB_URL = "10.78.57.32";      //TRSServerÊı¾İ¿âURL
-//    private final static String DB_URL = "10.72.76.89";      //TRSServerÊı¾İ¿âURL
-    private final static String DB_URL = "10.72.76.73";      //TRSServerÊı¾İ¿âURL
-    private final static String DB_PORT = "8888";               //TRSServer¶Ë¿Ú
-    private final static String DB_USERNAME = "system";            //TRSServerÓÃ»§Ãû
-    private final static String DB_PASSWORD = "manager";         //TRSServerÃÜÂë
-    public final static String serverTable = "AS$37$68$1";        //TRSServerÊı¾İ¿âÃû  WeiXin  WeiBo
-    public final static String groupType = "Íâ²¿ÍøÕ¾";            //Êı¾İ¿âÀàĞÍ  ·ÖÎª  Íâ²¿ÍøÕ¾¡¢ÄÚ²¿ÍøÕ¾¡¢Î¢²©¡¢Î¢ĞÅ
+    //todo åœ¨å¯¼å‡ºå‰æ›´æ–° ip åº“å æ•°æ®åº“ç±»å‹ è¡¨è¾¾å¼ å­˜æ”¾è·¯å¾„(desktopã€countFileã€detailFileã€logPath)
+//    private final static String DB_URL = "localhost";      //TRSServeræ•°æ®åº“URL
+//    private final static String DB_URL = "10.72.77.90";	  //TRSServeræ•°æ®åº“URL
+    //private final static String DB_URL = "10.72.76.187";	  //TRSServeræ•°æ®åº“URL
+//    private final static String DB_URL = "10.78.57.32";      //TRSServeræ•°æ®åº“URL
+//    private final static String DB_URL = "10.72.76.89";      //TRSServeræ•°æ®åº“URL
+    public final static String DB_URL = "10.72.76.73";      //TRSServeræ•°æ®åº“URL
+    public final static String DB_PORT = "8888";               //TRSServerç«¯å£
+    public final static String DB_USERNAME = "system";            //TRSServerç”¨æˆ·å
+    public final static String DB_PASSWORD = "manager";         //TRSServerå¯†ç 
+    public final static String serverTable = "AS$37$68$1";        //TRSServeræ•°æ®åº“å  WeiXin  WeiBo
+    public final static String groupType = "å¤–éƒ¨ç½‘ç«™";            //æ•°æ®åº“ç±»å‹  åˆ†ä¸º  å¤–éƒ¨ç½‘ç«™ã€å†…éƒ¨ç½‘ç«™ã€å¾®åšã€å¾®ä¿¡
     public final static String desktop = "C:\\Users\\11633\\Desktop\\";
-    //    public final static String biaodashi = desktop + "ĞÅÏ¢±¨±í\\0507ÄÚÍø±í´ïÊ½.txt";        //ÄÚÍø±í´ïÊ½
-    public final static String biaodashi = desktop + "ĞÅÏ¢±¨±í\\0514ÍâÍø±í´ïÊ½.txt";        //ÍâÍø±í´ïÊ½
-    public final static String countFile = desktop + "ĞÅÏ¢±¨±í\\ÒÉËÆĞÅÏ¢\\" + groupType + "_ÒÉËÆĞÅÏ¢Í³¼Æ_" + LocalDate.now() + "_" + serverTable + ".xlsx";        //´æ·ÅÒÉËÆĞÅÏ¢Í³¼Æ
-    public final static String detailFile = desktop + "ĞÅÏ¢±¨±í\\ÒÉËÆĞÅÏ¢\\" + groupType + "_ÒÉËÆĞÅÏ¢ÏêÏ¸_" + LocalDate.now() + "_" + serverTable + ".xlsx";        //´æ·ÅÒÉËÆĞÅÏ¢ÏêÏ¸
-    public final static String logPath = desktop + "ĞÅÏ¢±¨±í\\log.txt";        //´æ·ÅÒÉËÆĞÅÏ¢ÏêÏ¸
-    public final static String siteList = "";                                     //Ôö¼ÓÌØÊâsitename
+    //    public final static String biaodashi = desktop + "ä¿¡æ¯æŠ¥è¡¨\\0507å†…ç½‘è¡¨è¾¾å¼.txt";        //å†…ç½‘è¡¨è¾¾å¼
+    public final static String biaodashi = desktop + "ä¿¡æ¯æŠ¥è¡¨\\0514å¤–ç½‘è¡¨è¾¾å¼.txt";        //å¤–ç½‘è¡¨è¾¾å¼
+    public final static String countFile = desktop + "ä¿¡æ¯æŠ¥è¡¨\\ç–‘ä¼¼ä¿¡æ¯\\" + groupType + "_ç–‘ä¼¼ä¿¡æ¯ç»Ÿè®¡_" + LocalDate.now() + "_" + serverTable + ".xlsx";        //å­˜æ”¾ç–‘ä¼¼ä¿¡æ¯ç»Ÿè®¡
+    public final static String detailFile = desktop + "ä¿¡æ¯æŠ¥è¡¨\\ç–‘ä¼¼ä¿¡æ¯\\" + groupType + "_ç–‘ä¼¼ä¿¡æ¯è¯¦ç»†_" + LocalDate.now() + "_" + serverTable + ".xlsx";        //å­˜æ”¾ç–‘ä¼¼ä¿¡æ¯è¯¦ç»†
+    public final static String logPath = desktop + "ä¿¡æ¯æŠ¥è¡¨\\log.txt";        //å­˜æ”¾ç–‘ä¼¼ä¿¡æ¯è¯¦ç»†
+    public final static String siteList = "";                                     //å¢åŠ ç‰¹æ®Šsitename
 
     /**
-     * ²âÊÔ
+     * æµ‹è¯•
      *
      * @param args
      */
     public static void main(String args[]) throws IOException {
-        //Í³¼ÆÁĞ±í
+        //ç»Ÿè®¡åˆ—è¡¨
         CountSensitiveWords.countBySize();
-        //ÏêÏ¸ĞÅÏ¢
+        //è¯¦ç»†ä¿¡æ¯
         CountSensitiveWords.detail();
     }
 
     /**
-     * »ñÈ¡Êı¾İ¿âÁ¬½Ó
+     * è·å–æ•°æ®åº“è¿æ¥
      *
      * @return
      */
@@ -63,14 +63,14 @@ public class DBConnector {
     }
 
     /**
-     * ¹Ø±ÕÊı¾İ¿âÁ¬½Ó
+     * å…³é—­æ•°æ®åº“è¿æ¥
      *
      * @param
      */
     public void closeConnection(TRSConnection conn) {
         try {
             if (conn != null) {
-                if (!conn.isClosed()) {   //ÅĞ¶Ïµ±Ç°Á¬½ÓÁ¬½Ó¶ÔÏóÈç¹ûÃ»ÓĞ±»¹Ø±Õ¾Íµ÷ÓÃ¹Ø±Õ·½·¨
+                if (!conn.isClosed()) {   //åˆ¤æ–­å½“å‰è¿æ¥è¿æ¥å¯¹è±¡å¦‚æœæ²¡æœ‰è¢«å…³é—­å°±è°ƒç”¨å…³é—­æ–¹æ³•
                     conn.close();
                 }
             }

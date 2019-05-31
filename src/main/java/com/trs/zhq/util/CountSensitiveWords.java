@@ -166,7 +166,7 @@ public class CountSensitiveWords {
             }else if("IR_CREATED_AT".equals(column)) {		//增加微博类型
                 list=new LinkedList();
                 for (int i = 0; i < rs.getRecordCount(); i++){
-                    WeiBuo weibo=new WeiBuo();
+                    WeiBo weibo=new WeiBo();
                     rs.moveTo(0, i);
                     String id= rs.getString("IR_MID");
                     weibo.setIR_MID(id);
@@ -534,7 +534,7 @@ public class CountSensitiveWords {
             header.createCell(4).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
 
         }else if("IR_CREATED_AT".equals(column)) {//增加微博库的类型
-            List<WeiBuo> list=new LinkedList<>();
+            List<WeiBo> list=new LinkedList<>();
             header.createCell(0).setCellValue("IR_MID");
             header.createCell(1).setCellValue("IR_SCREEN_NAME");
             header.createCell(2).setCellValue("IR_SITENAME");
@@ -553,14 +553,14 @@ public class CountSensitiveWords {
             //list = csw.searchMessage(serverTable,"IR_SITENAME=(海油螺号,图说海油) and IR_STATUS_CONTENT=%"+getSensitiveWords(filePath[i])+"%",false);
             for(int z=1;z<list.size()+1;z++) {
                 q=q+1;
-                WeiBuo weiBuo=list.get(z-1);
+                WeiBo weiBo =list.get(z-1);
                 XSSFRow header2=sheet.createRow(q);
-                header2.createCell(0).setCellValue(weiBuo.getIR_MID());
-                header2.createCell(1).setCellValue(weiBuo.getIR_SCREEN_NAME());
-                header2.createCell(2).setCellValue(weiBuo.getIR_SITENAME());
-                header2.createCell(3).setCellValue(weiBuo.getIR_URLNAME());
-                header2.createCell(4).setCellValue(weiBuo.getIR_STATUS_CONTENT());
-                header2.createCell(5).setCellValue(weiBuo.getKeyword());
+                header2.createCell(0).setCellValue(weiBo.getIR_MID());
+                header2.createCell(1).setCellValue(weiBo.getIR_SCREEN_NAME());
+                header2.createCell(2).setCellValue(weiBo.getIR_SITENAME());
+                header2.createCell(3).setCellValue(weiBo.getIR_URLNAME());
+                header2.createCell(4).setCellValue(weiBo.getIR_STATUS_CONTENT());
+                header2.createCell(5).setCellValue(weiBo.getKeyword());
             }
             bugNum=bugNum+list.size();
             System.out.println("");
