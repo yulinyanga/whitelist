@@ -14,12 +14,10 @@ import java.time.LocalDate;
  */
 public class DBConnector {
     //todo 在导出前更新 ip 库名 数据库类型 表达式 存放路径(desktop、countFile、detailFile、logPath)
-//    private final static String DB_URL = "localhost";      //TRSServer数据库URL
-//    private final static String DB_URL = "10.72.77.90";	  //TRSServer数据库URL
-    //private final static String DB_URL = "10.72.76.187";	  //TRSServer数据库URL
-//    private final static String DB_URL = "10.78.57.32";      //TRSServer数据库URL
-//    private final static String DB_URL = "10.72.76.89";      //TRSServer数据库URL
-    public final static String DB_URL = "10.72.76.73";      //TRSServer数据库URL
+    private final static String DB_URL_IN = "10.72.76.187";	  //内网
+    private final static String DB_URL_WEI = "10.72.76.89";      //微博微信
+    public final static String DB_URL_OUT = "10.72.76.73";      //外网
+    public final static String DB_URL = "";      //外网
     public final static String DB_PORT = "8888";               //TRSServer端口
     public final static String DB_USERNAME = "system";            //TRSServer用户名
     public final static String DB_PASSWORD = "manager";         //TRSServer密码
