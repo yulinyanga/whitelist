@@ -11,11 +11,11 @@
 <html lang="zh-cn">
 <head>
 	<meta charset="utf-8" />
-	<title>0529页面</title>
-	<link rel="stylesheet" href="layui/css/layui.css" media="all">
-	<script src="jquery-2.1.1.min.js"></script>
-	<script src="jquery.min.js"></script>
-	<script src="layui/layui.js" charset="utf-8"></script>
+	<title>CONNC</title>
+	<link rel="stylesheet" href="js/layui/css/layui.css" media="all">
+	<script src="js/jquery-2.1.1.min.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/layui/layui.js" charset="utf-8"></script>
 
 </head>
 <body>
@@ -53,8 +53,8 @@
 <script>
 	layui.use('upload', function(){
 		layui.upload({
-			url: ''
-			,ext: 'xls|xlsx'
+			url: '<%=basePath %>importWhiteList'
+			,ext: 'zip'
 			, dataType: "json"
 			,before: function(input){
 				//返回的参数item，即为当前的input DOM对象
