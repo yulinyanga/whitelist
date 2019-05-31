@@ -3,11 +3,10 @@ package com.trs.zhq.util;
 import com.eprobiti.trs.TRSConnection;
 import com.eprobiti.trs.TRSException;
 import com.eprobiti.trs.TRSResultSet;
+import com.trs.zhq.entity.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import utils.db.DBConnector;
-import utils.model.*;
 
 import java.io.*;
 import java.text.SimpleDateFormat;

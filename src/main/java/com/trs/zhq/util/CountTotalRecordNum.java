@@ -3,7 +3,6 @@ package com.trs.zhq.util;
 import com.eprobiti.trs.TRSConnection;
 import com.eprobiti.trs.TRSException;
 import com.eprobiti.trs.TRSResultSet;
-import utils.db.DBConnector;
 
 import java.util.List;
 

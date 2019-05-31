@@ -2,7 +2,6 @@ package com.trs.zhq.util;
 
 import com.eprobiti.trs.*;
 import com.trs.client.TRSConstant;
-import utils.db.DBConnector;
 
 import java.util.HashMap;
 import java.util.List;
