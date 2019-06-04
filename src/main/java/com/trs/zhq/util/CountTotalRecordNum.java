@@ -13,13 +13,13 @@ public class CountTotalRecordNum {
     static TRSResultSet rs = null;
 
     /*
-     * »ñÈ¡ËùÓĞµÄ¼ÇÂ¼Êı
+     * è·å–æ‰€æœ‰çš„è®°å½•æ•°
      */
     public static String getDataNumAll(String tableName) {
         long num = 0;
         String column = ConcatSiteName.getColumnName(tableName);
         conn = db.getDBConnection();
-        //ËùÓĞµÄÃô¸ĞĞÅÏ¢ÁĞ±í
+        //æ‰€æœ‰çš„æ•æ„Ÿä¿¡æ¯åˆ—è¡¨
         List list = null;
         rs = new TRSResultSet();
         try {
@@ -34,7 +34,7 @@ public class CountTotalRecordNum {
     }
 
     /**
-     * »ñÈ¡Ö¸ÍøÕ¾µÄÊıÁ¿
+     * è·å–æŒ‡ç½‘ç«™çš„æ•°é‡
      *
      * @param tableName
      * @return
@@ -44,7 +44,7 @@ public class CountTotalRecordNum {
         conn = db.getDBConnection();
         String column = ConcatSiteName.getColumnName(tableName);
         String column3 = ConcatSiteName.getColumnName3(tableName);
-        //ËùÓĞµÄÃô¸ĞĞÅÏ¢ÁĞ±í
+        //æ‰€æœ‰çš„æ•æ„Ÿä¿¡æ¯åˆ—è¡¨
         List list = null;
         rs = new TRSResultSet();
         try {

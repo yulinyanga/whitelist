@@ -17,11 +17,11 @@ public class CreateTable {
     public static void create(String serverTable,String columnname,HashMap<String,Integer> hashMapSpecialAll) {
         List<SpecialWord> list=new LinkedList<> ();
         XSSFWorkbook wb = new XSSFWorkbook();
-        XSSFSheet sheet = wb.createSheet("ÒÉËÆĞÅÏ¢ÁĞ±í");
+        XSSFSheet sheet = wb.createSheet("ç–‘ä¼¼ä¿¡æ¯åˆ—è¡¨");
         XSSFRow header=sheet.createRow(0);
         header.createCell(0).setCellValue(columnname);
-        header.createCell(1).setCellValue("¼ìË÷×ÜÁ¿");
-        header.createCell(2).setCellValue("ÒÉÃô¸Ğ´Ê×ÜÁ¿");
+        header.createCell(1).setCellValue("æ£€ç´¢æ€»é‡");
+        header.createCell(2).setCellValue("ç–‘æ•æ„Ÿè¯æ€»é‡");
         HashMap<String,Integer> hashMapAll=ConcatSiteName.getAllSiteNameData(serverTable);
         //HashMap<String,Integer> hashMapSpecialAll2=ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
         int g=1;
@@ -39,7 +39,7 @@ public class CreateTable {
             }
             g++;
         }
-        //ÉèÖÃÁĞµÄ¿í¶È
+        //è®¾ç½®åˆ—çš„å®½åº¦
         for(int i=0;i<header.getPhysicalNumberOfCells();i++){
             sheet.setColumnWidth(i, 255*20);
         }
@@ -50,7 +50,7 @@ public class CreateTable {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        //ÏòÖ¸¶¨ÎÄ¼şĞ´ÈëÄÚÈİ
+        //å‘æŒ‡å®šæ–‡ä»¶å†™å…¥å†…å®¹
         try {
             wb.write(fos);
         } catch (IOException e) {
@@ -67,13 +67,13 @@ public class CreateTable {
     public static void createMore(String serverTable,String columnname,String twoColumnname,HashMap<String,Integer> hashMapSpecialAll) {
         List<SpecialWord> list=new LinkedList<>();
         XSSFWorkbook wb = new XSSFWorkbook();
-        XSSFSheet sheet = wb.createSheet("ÒÉËÆĞÅÏ¢ÁĞ±í");
+        XSSFSheet sheet = wb.createSheet("ç–‘ä¼¼ä¿¡æ¯åˆ—è¡¨");
         XSSFRow header=sheet.createRow(0);
         header.createCell(0).setCellValue(columnname);
-        header.createCell(1).setCellValue("¼ìË÷×ÜÁ¿");
-        header.createCell(2).setCellValue("ÒÉÃô¸Ğ´Ê×ÜÁ¿");
+        header.createCell(1).setCellValue("æ£€ç´¢æ€»é‡");
+        header.createCell(2).setCellValue("ç–‘æ•æ„Ÿè¯æ€»é‡");
 
-        //²éÕÒ¿â¶ÔÓ¦µÄËùÓĞÕ¾µãÊıÁ¿<sitename,ÊıÁ¿>
+        //æŸ¥æ‰¾åº“å¯¹åº”çš„æ‰€æœ‰ç«™ç‚¹æ•°é‡<sitename,æ•°é‡>
         HashMap<String,Integer> hashMapAll=ConcatSiteName.getAllSiteNameData(serverTable);
         int g=1;
         for(String sitename:hashMapAll.keySet()) {
@@ -91,18 +91,18 @@ public class CreateTable {
             }
             g++;
         }
-        //ÉèÖÃÁĞµÄ¿í¶È
+        //è®¾ç½®åˆ—çš„å®½åº¦
         for(int i=0;i<header.getPhysicalNumberOfCells();i++){
             sheet.setColumnWidth(i, 255*20);
         }
         header.setHeightInPoints(30);
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream("d:/ÒÉËÆĞÅÏ¢·ÖÍøÕ¾Í³¼Æ.xlsx");
+            fos = new FileOutputStream("d:/ç–‘ä¼¼ä¿¡æ¯åˆ†ç½‘ç«™ç»Ÿè®¡.xlsx");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        //ÏòÖ¸¶¨ÎÄ¼şĞ´ÈëÄÚÈİ
+        //å‘æŒ‡å®šæ–‡ä»¶å†™å…¥å†…å®¹
         try {
             wb.write(fos);
         } catch (IOException e) {

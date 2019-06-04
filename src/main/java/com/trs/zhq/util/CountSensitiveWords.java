@@ -19,74 +19,30 @@ public class CountSensitiveWords {
     TRSResultSet rs = null;
 
     /**
-     * Í³¼Æ°üº¬Ãô¸Ğ´Ê¼ÇÂ¼µÄÌõÊı
-     *
-     * @param tableName
-     * @param sensitiveWords
-     * @param isContinue
-     * @return ÌõÊı
-     */
-    public long count(String tableName, String sensitiveWords, boolean isContinue) {
-        long num = 0;
-        conn = db.getDBConnection();
-        try {
-            rs = new TRSResultSet();
-            rs = conn.executeSelect(tableName, sensitiveWords, isContinue);
-            num = rs.getRecordCount();
-            //for (int i = 0; i < 3 && i < rs.getRecordCount(); i++){
-            for (int i = 0; i < rs.getRecordCount(); i++) {
-                rs.moveTo(0, i);
-                System.out.println();
-                System.out.println("µÚ" + i + "Ìõ¼ÇÂ¼");
-                //System.out.println(rs.getString("Y_ID"));
-                //String words = rs.getString("TRSCONTENT","red");
-                //System.out.println(rs.getString("id"));
-                //String words = rs.getString("content","red");
-                System.out.println(rs.getString("IR_SID"));
-                String words = rs.getString("IR_URLCONTENT", "red");
-                String[] wordsArray = words.split("<font color=red>");
-                String searchWords = "";
-                for (int j = 1; j < wordsArray.length; j++) {
-                    int index = wordsArray[j].indexOf("</font>");
-                    wordsArray[j] = wordsArray[j].substring(0, index);
-                    searchWords += wordsArray[j] + ",";
-                }
-                System.out.println(searchWords);
-                System.out.println("Ãô¸Ğ´Ê³öÏÖµÄ´ÎÊı£º" + sameWordNums(searchWords));
-            }
-        } catch (TRSException e) {
-            System.out.println("ErrorCode: " + e.getErrorCode());
-            System.out.println("ErrorString: " + e.getErrorString());
-        } finally {
-            db.closeConnection(conn);
-        }
-        return num;
-    }
-
-    /**
-     * ²éÕÒÃô¸Ğ´ÊµÄÏà¹ØĞÅÏ¢µÄÏêÏ¸ĞÅÏ¢
+     * æŸ¥æ‰¾æ•æ„Ÿè¯çš„ç›¸å…³ä¿¡æ¯çš„è¯¦ç»†ä¿¡æ¯
      *
      * @param tableName
      * @param sensitiveWords
      * @param isContinue
      * @param
-     * @return ÏêÏ¸ĞÅÏ¢
+     * @return è¯¦ç»†ä¿¡æ¯
      * @throws IOException
      */
     public List searchMessage(String tableName, String sensitiveWords, boolean isContinue) throws IOException {
         long num = 0;
         conn = db.getDBConnection();
-        //ËùÓĞµÄÒÉËÆĞÅÏ¢ÁĞ±í
+        //æ‰€æœ‰çš„ç–‘ä¼¼ä¿¡æ¯åˆ—è¡¨
         List list = null;
         try {
             rs = new TRSResultSet();
             rs = conn.executeSelect(tableName, sensitiveWords, isContinue);
             System.out.println(sensitiveWords);
             num = rs.getRecordCount();
-            //Ñ­»·Ìí¼ÓÒÉËÆĞÅÏ¢
+            //å¾ªç¯æ·»åŠ ç–‘ä¼¼ä¿¡æ¯
             String log = "";
             String column = ConcatSiteName.getColumnName(tableName);
-            String column3 = ConcatSiteName.getColumnName3(tableName);
+            String[] wordsArray;
+            String searchWords;
             if ("IR_HKEY".equals(column)) {
                 list = new ArrayList<WeiXin>();
                 for (int i = 0; i < rs.getRecordCount(); i++) {
@@ -98,8 +54,8 @@ public class CountSensitiveWords {
                     weiXin.setIR_CONTENT(rs.getString("IR_CONTENT"));
                     weiXin.setIR_HKEY(rs.getString("IR_HkEY"));
                     String words = rs.getString("IR_CONTENT", "red");
-                    String[] wordsArray = words.split("<font color=red>");
-                    String searchWords = "";
+                    wordsArray = words.split("<font color=red>");
+                    searchWords = "";
                     for (int j = 1; j < wordsArray.length; j++) {
                         int index = wordsArray[j].indexOf("</font>");
                         wordsArray[j] = wordsArray[j].substring(0, index);
@@ -109,7 +65,7 @@ public class CountSensitiveWords {
                     list.add(weiXin);
                 }
             }
-            if ("IR_SID".equals(column)) {
+            if ("IR_SID".equals(column) || "IR_AUTHORS".equals(column)) {
                 list = new ArrayList<SpecialWord>();
                 for (int i = 0; i < rs.getRecordCount(); i++) {
                     SpecialWord specialWord = new SpecialWord();
@@ -124,8 +80,8 @@ public class CountSensitiveWords {
                     String siteName = rs.getString("IR_SITENAME");
                     specialWord.setSiteName(siteName);
                     specialWord.setChannel(rs.getString("IR_CHANNEL"));
-                    String[] wordsArray = words.split("<font color=red>");
-                    String searchWords = "";
+                    wordsArray = words.split("<font color=red>");
+                    searchWords = "";
                     String groupname = rs.getString("IR_GROUPNAME");
                     specialWord.setGroupname(groupname);
                     for (int j = 1; j < wordsArray.length; j++) {
@@ -134,37 +90,11 @@ public class CountSensitiveWords {
                         searchWords += wordsArray[j] + ",";
                     }
                     specialWord.setKeyword(sameWordNums(searchWords));
-                    System.out.println("Ãô¸Ğ´Ê³öÏÖµÄ´ÎÊı£º" + sameWordNums(searchWords));
+                    System.out.println("æ•æ„Ÿè¯å‡ºç°çš„æ¬¡æ•°ï¼š" + sameWordNums(searchWords));
                     list.add(specialWord);
                     log += specialWord.toString() + "\r\n" + "\n" + "\n";
                 }
-            } else if ("IR_AUTHORS".equals(column)) {        //Ôö¼ÓÎ¢ĞÅÀàĞÍ
-                list = new ArrayList<SpecialWord>();
-                for (int i = 0; i < rs.getRecordCount(); i++) {
-                    SpecialWord specialWord = new SpecialWord();
-                    rs.moveTo(0, i);
-                    String id = rs.getString("IR_SID");
-                    specialWord.setId(id);
-                    String words = rs.getString("IR_URLCONTENT", "red");
-                    specialWord.setContent(words);
-                    String url = rs.getString("IR_URLNAME");
-                    specialWord.setUrl(url);
-                    String siteName = rs.getString("IR_SITENAME");
-                    specialWord.setSiteName(siteName);
-                    String[] wordsArray = words.split("<font color=red>");
-                    String searchWords = "";
-                    String groupname = rs.getString("IR_GROUPNAME");
-                    specialWord.setGroupname(groupname);
-                    for (int j = 1; j < wordsArray.length; j++) {
-                        int index = wordsArray[j].indexOf("</font>");
-                        wordsArray[j] = wordsArray[j].substring(0, index);
-                        searchWords += wordsArray[j] + ",";
-                    }
-                    specialWord.setKeyword(sameWordNums(searchWords));
-                    list.add(specialWord);
-                    log += specialWord.toString() + "\r\n" + "\n" + "\n";
-                }
-            } else if ("IR_CREATED_AT".equals(column)) {        //Ôö¼ÓÎ¢²©ÀàĞÍ
+            } else if ("IR_CREATED_AT".equals(column)) {        //å¢åŠ å¾®åšç±»å‹
                 list = new LinkedList();
                 for (int i = 0; i < rs.getRecordCount(); i++) {
                     WeiBo weibo = new WeiBo();
@@ -179,8 +109,8 @@ public class CountSensitiveWords {
                     weibo.setIR_URLNAME(url);
                     String words = rs.getString("IR_STATUS_CONTENT", "red");
                     weibo.setIR_STATUS_CONTENT(words);
-                    String[] wordsArray = words.split("<font color=red>");
-                    String searchWords = "";
+                    wordsArray = words.split("<font color=red>");
+                    searchWords = "";
                     for (int j = 1; j < wordsArray.length; j++) {
                         int index = wordsArray[j].indexOf("</font>");
                         wordsArray[j] = wordsArray[j].substring(0, index);
@@ -200,7 +130,7 @@ public class CountSensitiveWords {
                     log += wangPan.toString() + "\r\n" + "\n" + "\n";
                     list.add(wangPan);
                 }
-            } else if ("id".equals(column)) {
+            } else if ("id".equals(column) || "Y_ID".equals(column)) {
                 list = new ArrayList<JCMS>();
                 for (int i = 0; i < rs.getRecordCount(); i++) {
                     rs.moveTo(0, i);
@@ -214,8 +144,8 @@ public class CountSensitiveWords {
                     jcms.setTrscontent(rs.getString("TRSCONTENT"));
                     jcms.setDb_name(rs.getString("DB_NAME"));
                     String words = rs.getString("TRSCONTENT", "red");
-                    String[] wordsArray = words.split("<font color=red>");
-                    String searchWords = "";
+                    wordsArray = words.split("<font color=red>");
+                    searchWords = "";
                     for (int j = 1; j < wordsArray.length; j++) {
                         int index = wordsArray[j].indexOf("</font>");
                         wordsArray[j] = wordsArray[j].substring(0, index);
@@ -224,7 +154,7 @@ public class CountSensitiveWords {
                     jcms.setKeyword(sameWordNums(searchWords));
                     list.add(jcms);
                 }
-            } else if ("FileName".equals(column)) {
+            } else if ("FileName".equals(column) || "FilePath".equals(column)) {
                 list = new ArrayList<FIleModel>();
                 for (int i = 0; i < rs.getRecordCount(); i++) {
                     rs.moveTo(0, i);
@@ -233,81 +163,17 @@ public class CountSensitiveWords {
                     fIleModel.setFilepath(rs.getString("FilePath"));
                     fIleModel.setIp(rs.getString("ip"));
                     String words = rs.getString("WP_Content", "red");
-                    String[] wordsArray = words.split("<font color=red>");
-                    String searchWords = "";
+                    wordsArray = words.split("<font color=red>");
+                    searchWords = "";
                     for (int j = 1; j < wordsArray.length; j++) {
                         int index = wordsArray[j].indexOf("</font>");
                         wordsArray[j] = wordsArray[j].substring(0, index);
                         searchWords += wordsArray[j] + ",";
                     }
                     fIleModel.setKey(sameWordNums(searchWords));
-                    System.out.println("Ãô¸Ğ´Ê³öÏÖµÄ´ÎÊı£º" + sameWordNums(searchWords));
+                    System.out.println("æ•æ„Ÿè¯å‡ºç°çš„æ¬¡æ•°ï¼š" + sameWordNums(searchWords));
                     list.add(fIleModel);
                 }
-            } else if ("FilePath".equals(column)) {
-                list = new LinkedList<FIleModel>();
-                for (int i = 0; i < rs.getRecordCount(); i++) {
-                    rs.moveTo(0, i);
-                    FIleModel fIleModel = new FIleModel();
-                    fIleModel.setFilename(rs.getString("FileName"));
-                    fIleModel.setFilepath(rs.getString("FilePath"));
-                    fIleModel.setIp(rs.getString("ip"));
-                    String words = rs.getString("WP_Content", "red");
-                    String[] wordsArray = words.split("<font color=red>");
-                    String searchWords = "";
-                    for (int j = 1; j < wordsArray.length; j++) {
-                        int index = wordsArray[j].indexOf("</font>");
-                        wordsArray[j] = wordsArray[j].substring(0, index);
-                        searchWords += wordsArray[j] + ",";
-                    }
-                    fIleModel.setKey(sameWordNums(searchWords));
-                    System.out.println("Ãô¸Ğ´Ê³öÏÖµÄ´ÎÊı£º" + sameWordNums(searchWords));
-                    list.add(fIleModel);
-                }
-            } else if ("Y_ID".equals(column)) {
-                list = new ArrayList<JCMS>();
-                for (int i = 0; i < rs.getRecordCount(); i++) {
-                    rs.moveTo(0, i);
-                    JCMS jcms = new JCMS();
-                    jcms.setDB_TYPE(rs.getString("DB_TYPE"));
-                    jcms.setSID(rs.getString("Y_ID"));
-                    jcms.setSIP(rs.getString("SIP"));
-                    jcms.setSPORT(rs.getString("SPORT"));
-                    jcms.setTB_NAME(rs.getString("TB_NAME"));
-                    jcms.setY_ID(rs.getString("MID"));
-                    jcms.setTrscontent(rs.getString("TRSCONTENT"));
-                    jcms.setDb_name(rs.getString("DB_NAME"));
-                    String words = rs.getString("TRSCONTENT", "red");
-                    String[] wordsArray = words.split("<font color=red>");
-                    String searchWords = "";
-                    for (int j = 1; j < wordsArray.length; j++) {
-                        int index = wordsArray[j].indexOf("</font>");
-                        wordsArray[j] = wordsArray[j].substring(0, index);
-                        searchWords += wordsArray[j] + ",";
-                    }
-                    jcms.setKeyword(sameWordNums(searchWords));
-                    list.add(jcms);
-                }
-                /*list=new LinkedList<FIleModel>();
-                for (int i = 0; i < rs.getRecordCount(); i++){
-                    rs.moveTo(0, i);
-                    System.out.println("i" + i + "rs.getRecordCount()" + rs.getRecordCount());
-                    AuthorModel authorModel = new AuthorModel();
-                    authorModel.setAuthor_id(rs.getString("author_id"));
-                    authorModel.setAuthor_name(rs.getString("author"));
-                    authorModel.setMid(rs.getString("MID"));
-                    authorModel.setSip(rs.getString("SIP"));
-                    String words = rs.getString("trscontent", "red");
-                    String[] wordsArray = words.split("<font color=red>");
-                    String searchWords = "";
-                    for (int j = 1; j < wordsArray.length; j++) {
-                        int index = wordsArray[j].indexOf("</font>");
-                        wordsArray[j] = wordsArray[j].substring(0, index);
-                        searchWords += wordsArray[j] + ",";
-                    }
-                    authorModel.setKeyword(sameWordNums(searchWords));
-                    list.add(authorModel);
-                }*/
             }
 
             File file = new File(DBConfig.logPath);
@@ -324,10 +190,10 @@ public class CountSensitiveWords {
     }
 
     /**
-     * »ñÈ¡ÏàÓ¦Ä¿Â¼ÏÂÎÄ±¾ÖĞËùÓĞµÄÃô¸Ğ´Ê
+     * è·å–ç›¸åº”ç›®å½•ä¸‹æ–‡æœ¬ä¸­æ‰€æœ‰çš„æ•æ„Ÿè¯
      *
      * @param filePath
-     * @return ÎÄ±¾ÖĞËùÓĞµÄÃô¸Ğ´Ê
+     * @return æ–‡æœ¬ä¸­æ‰€æœ‰çš„æ•æ„Ÿè¯
      */
     public static String getSensitiveWords(String filePath) {
         String sensitiveWords = "";
@@ -341,10 +207,10 @@ public class CountSensitiveWords {
     }
 
     /**
-     * Ã¿Ìõ¼ÇÂ¼³öÏÖÏàÍ¬Ãô¸Ğ´ÊµÄ´ÎÊı
+     * æ¯æ¡è®°å½•å‡ºç°ç›¸åŒæ•æ„Ÿè¯çš„æ¬¡æ•°
      *
      * @param searchWords
-     * @return ÏàÍ¬Ãô¸Ğ´Ê¼ÇÂ¼
+     * @return ç›¸åŒæ•æ„Ÿè¯è®°å½•
      */
     public static String sameWordNums(String searchWords) {
         String[] string = searchWords.split(",");
@@ -359,61 +225,17 @@ public class CountSensitiveWords {
         return map.toString();
     }
 
-    public static String sameChar(String searchWords) {
-        String string = searchWords;
-        Map<Character, Integer> map = new HashMap<Character, Integer>();
-        for (int i = 0; i < string.length(); i++) {
-            Character character = new Character(string.charAt(i));
-            if (map.get(character) == null) {
-                map.put(character, 1);
-            } else {
-                map.put(character, map.get(character) + 1);
-            }
-        }
-        return map.toString();
-    }
-
-    /**
-     * »ñÈ¡Ö¸¶¨Êı¾İ¿âµÄÃô¸Ğ´ÊĞÅÏ¢
-     */
-    public void searchAllMessage() {
-        CountSensitiveWords csw = new CountSensitiveWords();
-        long recordNum = 0;
-        long recordTotal = 0;
-        String serverTable = "AS$6$10$1";
-        String[] where = {"(IR_SITENAME=¼¯ÍÅ¹«Ë¾¹ÙÍø) and (IR_URLCONTENT=", "(IR_SITENAME=OAÏµÍ³Ê×Ò³µÄÈı¸öĞÂÎÅÀ¸Ä¿) and (IR_URLCONTENT=", "(IR_SITENAME=%¹¤³ÌĞÅÏ¢×ÛºÏ¹ÜÀíÆ½Ì¨%) and (IR_URLCONTENT=", "(IR_SITENAME=oAÏµÍ³ĞÂÎÅÖĞĞÄÒ³Ãæ) and (IR_URLCONTENT="};
-        String[] filePath = new String[]{"D://chinese.txt", "D://english.txt", "D://traditional20190419.txt"};
-        List<SpecialWord> list = new ArrayList<>();
-
-        for (int j = 0; j < where.length; j++) {
-            for (int i = 0; i < filePath.length; i++) {
-                try {
-                    list = csw.searchMessage(serverTable, where[j] + getSensitiveWords(filePath[i]) + ")", false);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("==============================================================================");
-                //				System.out.println("ÒÔÉÏÎª  " + serverTable + " ±íµÄÕ¾µãÎª" + where[j] + "ÔÚ´ËÎÄ¼şµÄ¡®" + filePath[i] + "¡¯Ãô¸Ğ´Ê·¶Î§ÄÚ£¬¹²¼ìË÷µ½ " + recordNum + "Ìõ¼ÇÂ¼");
-                for (int z = 0; z < list.size(); z++) {
-                    SpecialWord specialWord = list.get(z);
-                    System.out.println("listµÄÏêÏ¸" + list.get(z).toString());
-                }
-
-            }
-        }
-    }
-
-    //ÅÅ³ı°×Ãûµ¥
+    //æ’é™¤ç™½åå•
     public static Map<String, Boolean> filterWhiteList(String username) {
         String sUserName = "system";
         String sPassWord = "manager";
         TRSConnection trscon = null;
         Map<String, Boolean> whiteMap = null;
         try {
-            // ½¨Á¢Á¬½Ó
+            // å»ºç«‹è¿æ¥
             trscon = new TRSConnection();
             trscon.connect(DBConfig.DB_URL_WHITELIST, DBConfig.DB_PORT_WHITELIST, sUserName, sPassWord);
-            //²éÑ¯°×Ãûµ¥£¬±éÀú
+            //æŸ¥è¯¢ç™½åå•ï¼Œéå†
             TRSResultSet rs = new TRSResultSet();
             whiteMap = new HashMap<>();
             rs.setConnection(trscon);
@@ -424,11 +246,11 @@ public class CountSensitiveWords {
                 whiteMap.put(rs.getString("url"), true);
             }
         } catch (TRSException ex) {
-            // Êä³ö´íÎóĞÅÏ¢
+            // è¾“å‡ºé”™è¯¯ä¿¡æ¯
             System.out.println(ex.getErrorCode() + ":" + ex.getErrorString());
             ex.printStackTrace();
         } finally {
-            // ¹Ø±ÕÁ¬½Ó
+            // å…³é—­è¿æ¥
             if (trscon != null) trscon.close();
             trscon = null;
         }
@@ -436,39 +258,44 @@ public class CountSensitiveWords {
     }
 
     /**
-     * Õâ¸öÖ÷·½·¨ÊÇÎªÁËÉú³ÉÒÉËÆĞÅÏ¢ÏêÏ¸ÁĞ±í
+     * è¿™ä¸ªä¸»æ–¹æ³•æ˜¯ä¸ºäº†ç”Ÿæˆç–‘ä¼¼ä¿¡æ¯è¯¦ç»†åˆ—è¡¨
      */
-    public static void detail(String username) throws IOException {
+    public static void detail(String username, Boolean isAdmin) throws IOException {
         Map<String, Boolean> whiteMap = filterWhiteList(username);
         CountSensitiveWords csw = new CountSensitiveWords();
         String serverTable = DBConfig.serverTable;
-        String[] filePath = new String[]{DBConfig.biaodashi};
         String[] where = ConcatSiteName.getAllSiteNAme(serverTable);
-        //Ê¹ÓÃÊı¾İ¿âµÄµÄÁĞÀ´Çø·ÖÊı¾İ¿â
+        //ä½¿ç”¨æ•°æ®åº“çš„çš„åˆ—æ¥åŒºåˆ†æ•°æ®åº“
         String column = ConcatSiteName.getColumnName(serverTable);
         String column3 = ConcatSiteName.getColumnName3(serverTable);
-        //Ôö¼ÓÊı¾İ¿âµÄÅĞ¶Ï
+        //å¢åŠ æ•°æ®åº“çš„åˆ¤æ–­
         XSSFWorkbook wb = new XSSFWorkbook();
-        XSSFSheet sheet = wb.createSheet("ÒÉËÆĞÅÏ¢ÁĞ±í");
+        XSSFSheet sheet = wb.createSheet("ç–‘ä¼¼ä¿¡æ¯åˆ—è¡¨");
         XSSFRow header = sheet.createRow(0);
         int bugNum = 0;
+        String exp;
+        if (isAdmin) {
+            exp = getSensitiveWords(DBConfig.biaodashi);
+        } else {
+            exp = DBConfig.biaodashi;
+        }
         if ("IR_HKEY".equals(column)) {
             List<WeiXin> list = new ArrayList<>();
-            header.createCell(0).setCellValue("ĞòºÅ");
-            header.createCell(1).setCellValue("Î¢ĞÅid");
-            header.createCell(2).setCellValue("×÷ÕßÃû");
-            header.createCell(3).setCellValue("Á´½ÓµØÖ·");
-//            header.createCell(5).setCellValue("ÎÄ±¾ÄÚÈİ");
+            header.createCell(0).setCellValue("åºå·");
+            header.createCell(1).setCellValue("å¾®ä¿¡id");
+            header.createCell(2).setCellValue("ä½œè€…å");
+            header.createCell(3).setCellValue("é“¾æ¥åœ°å€");
+            header.createCell(4).setCellValue("æ£€ç´¢è¯");
+//            header.createCell(5).setCellValue("æ–‡æœ¬å†…å®¹");
 //            header.createCell(6).setCellValue("IR_HEKY");
-            header.createCell(4).setCellValue("¼ìË÷´Ê");
-            //¶¨Òå³öÒì³£µÄÊıÁ¿
+            //å®šä¹‰å‡ºå¼‚å¸¸çš„æ•°é‡
             int q = 0;
-            list = csw.searchMessage(serverTable, DBConfig.siteList + "IR_CONTENT=%" + getSensitiveWords(filePath[0]) + "%", false);
-//                    list = csw.searchMessage(serverTable, "(ÖĞº£Ê¯ÓÍ,º£ÓÍ,º£ÑóÊ¯ÓÍ) AND IR_CONTENT=%"+getSensitiveWords(filePath[0])+"%", false);
-            for (int z = 1; z < list.size() + 1; ) {
-                q = q + 1;
+            list = csw.searchMessage(serverTable, exp, false);
+//            list = csw.searchMessage(serverTable, "IR_HKEY=% OR IR_CONTENT=%" + getSensitiveWords(filePath[0]) + "%", false);
+            for (int z = 1; z < list.size() + 1; z++) {
                 WeiXin weiXin = list.get(z - 1);
-                if (whiteMap.get(weiXin.getIR_URLNAME()) == null) continue;
+                if (whiteMap.get(weiXin.getIR_URLNAME()) != null) continue;
+                q = q + 1;
                 XSSFRow header2 = sheet.createRow(q);
                 header2.createCell(0).setCellValue(q);
                 header2.createCell(1).setCellValue(weiXin.getIR_WEIXINID());
@@ -477,105 +304,94 @@ public class CountSensitiveWords {
 //                        header2.createCell(5).setCellValue(weiXin.getIR_CONTENT());
                 header2.createCell(6).setCellValue(weiXin.getIR_HKEY());
                 header2.createCell(4).setCellValue(weiXin.getKeyword());
+            }
+            bugNum = bugNum + list.size();
+            header.createCell(5).setCellValue("è®°å½•æ•°æ€»é‡: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   å¼‚å¸¸æ•°é‡ä¸º:" + (list.size() - 1));
+        } else if ("IR_SID".equals(column)) {
+            List<SpecialWord> list = new ArrayList<>();
+            header.createCell(0).setCellValue("åºå·");
+            header.createCell(1).setCellValue("å•ä½åç§°");
+            header.createCell(2).setCellValue("åº”ç”¨åˆ†ç±»");
+            header.createCell(3).setCellValue("åº”ç”¨ç¼–ç ");
+            header.createCell(4).setCellValue("åº”ç”¨åç§°");
+            header.createCell(5).setCellValue("ç–‘ä¼¼åœ°å€");
+            header.createCell(6).setCellValue("ç–‘ä¼¼å…³é”®è¯");
+            header.createCell(7).setCellValue("å‘ç°æ—¶é—´");
+            //å®šä¹‰å‡ºå¼‚å¸¸çš„æ•°é‡
+            int q = 0;
+            String url;
+            list = csw.searchMessage(serverTable, exp, false);
+            for (int z = 1; z < list.size() + 1; ) {
+                SpecialWord specialWord = list.get(z - 1);
+                url = specialWord.getUrl();
+                //å»é™¤ç™½åå•
+                if (whiteMap.get(url) != null) continue;
+                q = q + 1;
+                XSSFRow header2 = sheet.createRow(q);
+                String siteName = specialWord.getSiteName();
+                System.out.println(siteName);
+                String code = "";
+                String unitName = siteName;
+                int index = siteName.indexOf("_");
+                if (index != -1) {
+                    code = siteName.substring(0, index);
+                    unitName = siteName.substring(index + 1);
+                }
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                Long time = new Date().getTime() - 1000 * 60 * 60 * 24;
+                String date = sdf.format(time);
+                header2.createCell(0).setCellValue(q);
+                header2.createCell(1).setCellValue(unitName);
+                header2.createCell(2).setCellValue(DBConfig.groupType);
+                header2.createCell(3).setCellValue(code);
+                header2.createCell(4).setCellValue(specialWord.getChannel());
+                header2.createCell(5).setCellValue(url);
+                header2.createCell(6).setCellValue(specialWord.getKeyword());
+                header2.createCell(7).setCellValue(date);
                 z++;
             }
             bugNum = bugNum + list.size();
-            header.createCell(5).setCellValue("¼ÇÂ¼Êı×ÜÁ¿: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   Òì³£ÊıÁ¿Îª:" + (list.size() - 1));
-        } else if ("IR_SID".equals(column)) {
-            List<SpecialWord> list = new ArrayList<>();
-            header.createCell(0).setCellValue("ĞòºÅ");
-            header.createCell(1).setCellValue("µ¥Î»Ãû³Æ");
-            header.createCell(2).setCellValue("Ó¦ÓÃ·ÖÀà");
-            header.createCell(3).setCellValue("Ó¦ÓÃ±àÂë");
-            header.createCell(4).setCellValue("Ó¦ÓÃÃû³Æ");
-            header.createCell(5).setCellValue("ÒÉËÆµØÖ·");
-            header.createCell(6).setCellValue("ÒÉËÆ¹Ø¼ü´Ê");
-            header.createCell(7).setCellValue("·¢ÏÖÊ±¼ä");
-            //¶¨Òå³öÒì³£µÄÊıÁ¿
-            int q = 0;
-            for (int j = 0; j < where.length; j++) {
-                for (int i = 0; i < filePath.length; i++) {
-                    String url = "";
-                    list = csw.searchMessage(serverTable, where[j] + getSensitiveWords(filePath[i]) + "%)", false);
-                    for (int z = 1; z < list.size() + 1; ) {
-                        q = q + 1;
-                        SpecialWord specialWord = list.get(z - 1);
-                        url = specialWord.getUrl();
-                        //È¥³ı°×Ãûµ¥
-                        if (whiteMap.get(url) == null) continue;
-                        XSSFRow header2 = sheet.createRow(q);
-                        String siteName = specialWord.getSiteName();
-                        System.out.println(siteName);
-                        String code = "";
-                        String unitName = siteName;
-                        int index = siteName.indexOf("_");
-                        if (index != -1) {
-                            code = siteName.substring(0, index);
-                            unitName = siteName.substring(index + 1);
-                        }
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-                        Long time = new Date().getTime() - 1000 * 60 * 60 * 24;
-                        String date = sdf.format(time);
-                        header2.createCell(0).setCellValue(q);
-                        header2.createCell(1).setCellValue(unitName);
-                        header2.createCell(2).setCellValue(DBConfig.groupType);
-                        header2.createCell(3).setCellValue(code);
-                        header2.createCell(4).setCellValue(specialWord.getChannel());
-                        header2.createCell(5).setCellValue(url);
-                        header2.createCell(6).setCellValue(specialWord.getKeyword());
-                        header2.createCell(7).setCellValue(date);
-                        z++;
-                    }
-                    bugNum = bugNum + list.size();
-                }
-            }
-            header.createCell(8).setCellValue("¼ÇÂ¼Êı×ÜÁ¿: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   Òì³£ÊıÁ¿Îª:" + (list.size() - 1));
+            header.createCell(8).setCellValue("è®°å½•æ•°æ€»é‡: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   å¼‚å¸¸æ•°é‡ä¸º:" + (list.size() - 1));
 
         } else if ("FileName".equals(column)) {
             List<FIleModel> list = new ArrayList<>();
-            header.createCell(0).setCellValue("ÎÄ¼şÃû");
-            header.createCell(1).setCellValue("ÎÄ¼şµØÖ·");
+            header.createCell(0).setCellValue("æ–‡ä»¶å");
+            header.createCell(1).setCellValue("æ–‡ä»¶åœ°å€");
             header.createCell(2).setCellValue("ip");
-            header.createCell(3).setCellValue("¼ìË÷´Ê");
-            //¶¨Òå³öÒì³£µÄÊıÁ¿
+            header.createCell(3).setCellValue("æ£€ç´¢è¯");
+            //å®šä¹‰å‡ºå¼‚å¸¸çš„æ•°é‡
             int q = 0;
-
-            for (int j = 0; j < where.length; j++) {
-                for (int i = 0; i < filePath.length; i++) {
-                    String str = where[j] + getSensitiveWords(filePath[i]) + "%)";
-                    list = csw.searchMessage(serverTable, where[j] + getSensitiveWords(filePath[i]) + "%)", false);
-                    //list = csw.searchMessage(serverTable,"WP_Content=(%"+getSensitiveWords(filePath[i])	+"%)",false);
-                    for (int z = 1; z < list.size() + 1; z++) {
-                        q = q + 1;
-                        FIleModel fIleModel = list.get(z - 1);
-                        XSSFRow header2 = sheet.createRow(q);
-                        header2.createCell(0).setCellValue(fIleModel.getFilename());
-                        header2.createCell(1).setCellValue(fIleModel.getFilepath());
-                        header2.createCell(2).setCellValue(fIleModel.getIp());
-                        header2.createCell(3).setCellValue(fIleModel.getKey());
-                    }
-                    bugNum = bugNum + list.size();
-                }
+            list = csw.searchMessage(serverTable, exp, false);
+            //list = csw.searchMessage(serverTable,"WP_Content=(%"+getSensitiveWords(filePath[i])	+"%)",false);
+            for (int z = 1; z < list.size() + 1; z++) {
+                q = q + 1;
+                FIleModel fIleModel = list.get(z - 1);
+                XSSFRow header2 = sheet.createRow(q);
+                header2.createCell(0).setCellValue(fIleModel.getFilename());
+                header2.createCell(1).setCellValue(fIleModel.getFilepath());
+                header2.createCell(2).setCellValue(fIleModel.getIp());
+                header2.createCell(3).setCellValue(fIleModel.getKey());
             }
-            header.createCell(4).setCellValue("¼ÇÂ¼Êı×ÜÁ¿: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   Òì³£ÊıÁ¿Îª:" + bugNum);
+            bugNum = bugNum + list.size();
+            header.createCell(4).setCellValue("è®°å½•æ•°æ€»é‡: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   å¼‚å¸¸æ•°é‡ä¸º:" + bugNum);
 
-        } else if ("IR_CREATED_AT".equals(column)) {//Ôö¼ÓÎ¢²©¿âµÄÀàĞÍ
+        } else if ("IR_CREATED_AT".equals(column)) {//å¢åŠ å¾®åšåº“çš„ç±»å‹
             List<WeiBo> list = new LinkedList<>();
             header.createCell(0).setCellValue("IR_MID");
             header.createCell(1).setCellValue("IR_SCREEN_NAME");
             header.createCell(2).setCellValue("IR_SITENAME");
             header.createCell(3).setCellValue("url");
-            header.createCell(4).setCellValue("ÄÚÈİ");
-            header.createCell(5).setCellValue("¼ìË÷´Ê");
-            //¶¨Òå³öÒì³£µÄÊıÁ¿
+            header.createCell(4).setCellValue("å†…å®¹");
+            header.createCell(5).setCellValue("æ£€ç´¢è¯");
+            //å®šä¹‰å‡ºå¼‚å¸¸çš„æ•°é‡
             int q = 0;
-            list = csw.searchMessage(serverTable, "IR_STATUS_CONTENT=(%" + getSensitiveWords(filePath[0]) + "%)", false);
-            //list = csw.searchMessage(serverTable,"IR_SITENAME=(º£ÓÍÂİºÅ,Í¼Ëµº£ÓÍ) and IR_STATUS_CONTENT=%"+getSensitiveWords(filePath[i])+"%",false);
+            list = csw.searchMessage(serverTable, exp, false);
+            //list = csw.searchMessage(serverTable,"IR_SITENAME=(æµ·æ²¹èºå·,å›¾è¯´æµ·æ²¹) and IR_STATUS_CONTENT=%"+getSensitiveWords(filePath[i])+"%",false);
             for (int z = 1; z < list.size() + 1; ) {
-                q = q + 1;
                 WeiBo weiBo = list.get(z - 1);
-                //È¥³ı°×Ãûµ¥
-                if (whiteMap.get(weiBo.getIR_URLNAME()) == null) continue;
+                //å»é™¤ç™½åå•
+                if (whiteMap.get(weiBo.getIR_URLNAME()) != null) continue;
+                q = q + 1;
                 XSSFRow header2 = sheet.createRow(q);
                 header2.createCell(0).setCellValue(weiBo.getIR_MID());
                 header2.createCell(1).setCellValue(weiBo.getIR_SCREEN_NAME());
@@ -589,70 +405,34 @@ public class CountSensitiveWords {
             System.out.println("");
 //				}
 //			}
-            header.createCell(6).setCellValue("¼ÇÂ¼Êı×ÜÁ¿: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   Òì³£ÊıÁ¿Îª:" + bugNum);
+            header.createCell(6).setCellValue("è®°å½•æ•°æ€»é‡: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   å¼‚å¸¸æ•°é‡ä¸º:" + bugNum);
 
-        } else if ("id".equals(column)) {
-            List<JCMS> list = new LinkedList<>();
+        } else if ("Y_ID".equals(column) || "id".equals(column)) {
+            List<JCMS> list = null;
             header.createCell(0).setCellValue("id");
             header.createCell(1).setCellValue("ip");
-            header.createCell(2).setCellValue("Êı¾İ¿âÃû³Æ");
-            header.createCell(3).setCellValue("±íÃû³Æ");
-            header.createCell(4).setCellValue("ÎÄ±¾");
-            header.createCell(5).setCellValue("¼ìË÷´Ê");
-            //¶¨Òå³öÒì³£µÄÊıÁ¿
+            header.createCell(2).setCellValue("æ•°æ®åº“åç§°");
+            header.createCell(3).setCellValue("è¡¨åç§°");
+            header.createCell(4).setCellValue("æ–‡æœ¬");
+            header.createCell(5).setCellValue("æ£€ç´¢è¯");
+            //å®šä¹‰å‡ºå¼‚å¸¸çš„æ•°é‡
             int q = 0;
-            for (int j = 0; j < where.length; j++) {
-                for (int i = 0; i < filePath.length; i++) {
-                    String str = where[j] + getSensitiveWords(filePath[i]) + "%)";
-                    list = csw.searchMessage(serverTable, where[j] + getSensitiveWords(filePath[i]) + "%)", false);
-                    for (int z = 1; z < list.size() + 1; z++) {
-                        q = q + 1;
-                        JCMS jcms = list.get(z - 1);
-                        XSSFRow header2 = sheet.createRow(q);
-                        header2.createCell(0).setCellValue(jcms.getSID());
-                        header2.createCell(1).setCellValue(jcms.getSIP());
-                        header2.createCell(2).setCellValue(jcms.getDb_name());
-                        header2.createCell(3).setCellValue(jcms.getTB_NAME());
-                        header2.createCell(4).setCellValue(jcms.getTrscontent());
-                        header2.createCell(5).setCellValue(jcms.getKeyword());
-                    }
-                    bugNum = bugNum + list.size();
-                    System.out.println("");
-                }
+            list = csw.searchMessage(serverTable, exp, false);
+            for (int z = 1; z < list.size() + 1; z++) {
+                q = q + 1;
+                JCMS jcms = list.get(z - 1);
+                XSSFRow header2 = sheet.createRow(q);
+                header2.createCell(0).setCellValue(jcms.getSID());
+                header2.createCell(1).setCellValue(jcms.getSIP());
+                header2.createCell(2).setCellValue(jcms.getDb_name());
+                header2.createCell(3).setCellValue(jcms.getTB_NAME());
+                header2.createCell(4).setCellValue(jcms.getTrscontent());
+                header2.createCell(5).setCellValue(jcms.getKeyword());
             }
-            header.createCell(6).setCellValue("¼ÇÂ¼Êı×ÜÁ¿: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   Òì³£ÊıÁ¿Îª:" + bugNum);
-        } else if ("Y_ID".equals(column)) {
-            List<JCMS> list = new LinkedList<>();
-            header.createCell(0).setCellValue("id");
-            header.createCell(1).setCellValue("ip");
-            header.createCell(2).setCellValue("Êı¾İ¿âÃû³Æ");
-            header.createCell(3).setCellValue("±íÃû³Æ");
-            header.createCell(4).setCellValue("ÎÄ±¾");
-            header.createCell(5).setCellValue("¼ìË÷´Ê");
-            //¶¨Òå³öÒì³£µÄÊıÁ¿
-            int q = 0;
-            for (int j = 0; j < where.length; j++) {
-                for (int i = 0; i < filePath.length; i++) {
-                    String str = where[j] + getSensitiveWords(filePath[i]) + "%)";
-                    list = csw.searchMessage(serverTable, where[j] + getSensitiveWords(filePath[i]) + "%)", false);
-                    for (int z = 1; z < list.size() + 1; z++) {
-                        q = q + 1;
-                        JCMS jcms = list.get(z - 1);
-                        XSSFRow header2 = sheet.createRow(q);
-                        header2.createCell(0).setCellValue(jcms.getSID());
-                        header2.createCell(1).setCellValue(jcms.getSIP());
-                        header2.createCell(2).setCellValue(jcms.getDb_name());
-                        header2.createCell(3).setCellValue(jcms.getTB_NAME());
-                        header2.createCell(4).setCellValue(jcms.getTrscontent());
-                        header2.createCell(5).setCellValue(jcms.getKeyword());
-                    }
-                    bugNum = bugNum + list.size();
-                    System.out.println("");
-                }
-            }
-            header.createCell(6).setCellValue("¼ÇÂ¼Êı×ÜÁ¿: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   Òì³£ÊıÁ¿Îª:" + bugNum);
+            bugNum = bugNum + list.size();
+            header.createCell(6).setCellValue("è®°å½•æ•°æ€»é‡: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   å¼‚å¸¸æ•°é‡ä¸º:" + bugNum);
         }
-        //ÉèÖÃÁĞµÄ¿í¶È
+        //è®¾ç½®åˆ—çš„å®½åº¦
         for (int i = 0; i < header.getPhysicalNumberOfCells(); i++) {
             sheet.setColumnWidth(i, 255 * 20);
         }
@@ -663,7 +443,7 @@ public class CountSensitiveWords {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        //ÏòÖ¸¶¨ÎÄ¼şĞ´ÈëÄÚÈİ
+        //å‘æŒ‡å®šæ–‡ä»¶å†™å…¥å†…å®¹
         try {
             wb.write(fos);
         } catch (IOException e) {
@@ -678,48 +458,48 @@ public class CountSensitiveWords {
     }
 
     /**
-     * ·ÖÍøÕ¾Í³¼Æ
+     * åˆ†ç½‘ç«™ç»Ÿè®¡
      *
      * @throws IOException
      */
-    public static void countBySize() throws IOException {
+    public static void countBySize() {
         String serverTable = DBConfig.serverTable;
         String[] filePath = {DBConfig.biaodashi};
-        //Ê¹ÓÃÊı¾İ¿âµÄµÄÁĞÀ´Çø·ÖÊı¾İ¿â
+        //ä½¿ç”¨æ•°æ®åº“çš„çš„åˆ—æ¥åŒºåˆ†æ•°æ®åº“
         String column = ConcatSiteName.getColumnName(serverTable);
         String column3 = ConcatSiteName.getColumnName3(serverTable);
-        //Ôö¼ÓÊı¾İ¿âµÄÅĞ¶Ï
+        //å¢åŠ æ•°æ®åº“çš„åˆ¤æ–­
         if ("IR_HKEY".equals(column)) {
-            //Ôö¼ÓÃô¸Ğ´ÊµÄmap¼¯ºÏ
+            //å¢åŠ æ•æ„Ÿè¯çš„mapé›†åˆ
             HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "Î¢ĞÅÃû³Æ";
-            //´´½¨±í¸ñ
+            String columnname = "å¾®ä¿¡åç§°";
+            //åˆ›å»ºè¡¨æ ¼
             CreateTable.create(serverTable, columnname, hashMapSpecialAll);
         } else if ("IR_CREATED_AT".equals(column)) {
-            //Ôö¼ÓÃô¸Ğ´ÊµÄmap¼¯ºÏ
+            //å¢åŠ æ•æ„Ÿè¯çš„mapé›†åˆ
             HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "Î¢²©Ãû³Æ";
-            //´´½¨±í¸ñ
+            String columnname = "å¾®åšåç§°";
+            //åˆ›å»ºè¡¨æ ¼
             CreateTable.create(serverTable, columnname, hashMapSpecialAll);
-        } else if ("IR_SID".equals(column)) {            //Ôö¼ÓÎ¢²©¿âµÄÀàĞÍ
+        } else if ("IR_SID".equals(column)) {            //å¢åŠ å¾®åšåº“çš„ç±»å‹
             HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "ÍøÕ¾Ãû³Æ";
-            //´´½¨±í¸ñ
+            String columnname = "ç½‘ç«™åç§°";
+            //åˆ›å»ºè¡¨æ ¼
             CreateTable.create(serverTable, columnname, hashMapSpecialAll);
         } else if ("FileName".equals(column)) {
             HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "ipÃû³Æ";
-            //´´½¨±í¸ñ
+            String columnname = "ipåç§°";
+            //åˆ›å»ºè¡¨æ ¼
             CreateTable.create(serverTable, columnname, hashMapSpecialAll);
         } else if ("id".equals(column)) {
             HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "±íÃû³Æ";
-            //´´½¨±í¸ñ
+            String columnname = "è¡¨åç§°";
+            //åˆ›å»ºè¡¨æ ¼
             CreateTable.create(serverTable, columnname, hashMapSpecialAll);
         } else if ("Y_ID".equals(column)) {
             HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "±íÃû³Æ";
-            //´´½¨±í¸ñ
+            String columnname = "è¡¨åç§°";
+            //åˆ›å»ºè¡¨æ ¼
             CreateTable.create(serverTable, columnname, hashMapSpecialAll);
         }
     }

@@ -6,6 +6,7 @@ import com.trs.zhq.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,15 +52,52 @@ public class IndexController {
     }
 
     @RequestMapping("exportData")
-    public String exportData(String username,HttpServletRequest request,HttpServletResponse response) {
-        DBConfig.DB_URL = "127.0.0.1";
-        username = "ceshi";
+    @ResponseBody
+    public String exportData(HttpServletRequest request,HttpServletResponse response, String userName, Integer siteType, String keyWord, String siteList) {
+        if(keyWord == null || "".equals(keyWord.trim())){
+            keyWord = "%";
+        }
+        if(siteList == null || "".equals(siteList.trim())){
+            siteList = "%";
+        }
+        if (siteType == null) return "";
+        if (siteType == 0) {
+            DBConfig.DB_URL = DBConfig.DB_URL_WEB;
+            DBConfig.serverTable = DBConfig.TABLE_WEB;
+            DBConfig.groupType = "外部网站";
+            DBConfig.biaodashi = "IR_SITENAME=(" + siteList.replaceAll(",", "%,") + "%) AND (" + keyWord + ")";
+        } else if (siteType == 1) {
+            DBConfig.DB_URL = DBConfig.DB_URL_WEB;
+            DBConfig.serverTable = DBConfig.TABLE_INTRANET;
+            DBConfig.groupType = "内部网站";
+            DBConfig.biaodashi = "IR_SITENAME=(" + siteList.replaceAll(",", "%,") + "%) AND (" + keyWord + ")";
+        } else if (siteType == 2) {
+            DBConfig.DB_URL = DBConfig.DB_URL_WEI;
+            DBConfig.serverTable = DBConfig.TABLE_WEINBO;
+            DBConfig.groupType = "微博";
+            DBConfig.biaodashi = "IR_SCREEN_NAME=(" + siteList.replaceAll(",", "%,") + "%) AND (" + keyWord + ")";
+        } else {
+            DBConfig.DB_URL = DBConfig.DB_URL_WEI;
+            DBConfig.serverTable = DBConfig.TABLE_WEIXIN;
+            DBConfig.groupType = "微信";
+            DBConfig.biaodashi = "IR_AUTHORS=(" + siteList.replaceAll(",", "%,") + "%) AND (" + keyWord + ")";
+        }
+        Boolean isAdmin = false;
+        if ("cnoocadmin".equals(userName)) {
+            isAdmin = true;
+            if (siteType == 1) {
+                DBConfig.biaodashi = DBConfig.biaodashi_intranet;
+            } else {
+                DBConfig.biaodashi = DBConfig.biaodashi_web;
+            }
+        }
         //统计列表
         try {
 //            CountSensitiveWords.countBySize();
-            CountSensitiveWords.detail(username);
-            String filename = System.currentTimeMillis() + "疑似信息.xlsx";
+            CountSensitiveWords.detail(userName, isAdmin);
 
+            //下载文件
+            String filename = System.currentTimeMillis() + "疑似信息.xlsx";
             //解决firefox的文件名乱码
             String agent = request.getHeader("USER-AGENT");
 //            response.setContentType("application/octet-stream");

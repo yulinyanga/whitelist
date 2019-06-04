@@ -71,7 +71,7 @@ public class ConfigServiceImpl implements ConfigService {
                     trscon.setMaintOptions('\u00ff', "", "", 0, 0);
                     String strValue = "username=" + datum[0] + "\u00ff url=" + datum[1].toString();
 //                    String strValue = "IR_AUTHORS="+ datum[0] +"\u00ff IR_URLNAME="+datum[1];
-                    int iInsertNum = trscon.executeInsert("Demo1", "system", strValue);
+                    int iInsertNum = trscon.executeInsert(DBConfig.DB_TABLE_WHITELIST, "system", strValue);
                     num = num + iInsertNum;
                 }
             }
