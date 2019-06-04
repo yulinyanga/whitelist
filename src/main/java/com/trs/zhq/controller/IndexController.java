@@ -102,7 +102,7 @@ public class IndexController {
             String agent = request.getHeader("USER-AGENT");
 //            response.setContentType("application/octet-stream");
             // 1.设置文件ContentType类型，这样设置，会自动判断下载文件类型
-            response.setContentType("application/vnd.ms-excel");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             if (agent != null && agent.toLowerCase().indexOf("firefox") > 0) {
                 String downloadName = new String(filename.getBytes("GB2312"), "ISO-8859-1");
                 response.setHeader("Content-Disposition", "attachment; filename=" + downloadName);
@@ -111,7 +111,7 @@ public class IndexController {
                 response.setHeader("Content-Disposition", "attachment;fileName="
                         + URLEncoder.encode(filename, "UTF-8"));
             }
-
+            System.out.println(DBConfig.detailFile);
             OutputStream os = response.getOutputStream();
             InputStream is = new FileInputStream(DBConfig.detailFile);
             byte[] bytes = new byte[1024 * 8];
@@ -119,6 +119,9 @@ public class IndexController {
             while ((len = is.read(bytes)) != -1) {
                 os.write(bytes, 0, len);
             }
+            is.close();
+            os.close();
+            os.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
