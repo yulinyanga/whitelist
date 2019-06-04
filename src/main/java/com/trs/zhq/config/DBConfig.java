@@ -1,8 +1,9 @@
-package com.trs.zhq.util;
+package com.trs.zhq.config;
 
 
 import com.eprobiti.trs.TRSConnection;
 import com.eprobiti.trs.TRSException;
+import com.trs.zhq.util.CountSensitiveWords;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -12,17 +13,21 @@ import java.time.LocalDate;
  *
  * @author Hermes
  */
-public class DBConnector {
+public class DBConfig {
     //todo 在导出前更新 ip 库名 数据库类型 表达式 存放路径(desktop、countFile、detailFile、logPath)
-    private final static String DB_URL_IN = "10.72.76.187";	  //内网
-    private final static String DB_URL_WEI = "10.72.76.89";      //微博微信
+    public final static String DB_URL_WHITELIST = "127.0.0.1";	  //白名单ip
+    public final static String DB_PORT_WHITELIST = "9999";	  //白名单port
+    public final static String DB_TABLE_WHITELIST = "Demo1";        //TRSServer数据库名  WeiXin  WeiBo
+
+    public final static String DB_URL_IN = "10.72.76.187";	  //内网
+    public final static String DB_URL_WEI = "10.72.76.89";      //微博微信
     public final static String DB_URL_OUT = "10.72.76.73";      //外网
-    public final static String DB_URL = "";      //外网
-    public final static String DB_PORT = "8888";               //TRSServer端口
+    public static String DB_URL = "";      //外网
+    public final static String DB_PORT = "9999";               //TRSServer端口
     public final static String DB_USERNAME = "system";            //TRSServer用户名
     public final static String DB_PASSWORD = "manager";         //TRSServer密码
-    public final static String serverTable = "AS$37$68$1";        //TRSServer数据库名  WeiXin  WeiBo
-    public final static String groupType = "外部网站";            //数据库类型  分为  外部网站、内部网站、微博、微信
+    public final static String serverTable = "Demo2";        //TRSServer数据库名  WeiXin  WeiBo
+    public final static String groupType = "微信";            //数据库类型  分为  外部网站、内部网站、微博、微信
     public final static String desktop = "C:\\Users\\11633\\Desktop\\";
     //    public final static String biaodashi = desktop + "信息报表\\0507内网表达式.txt";        //内网表达式
     public final static String biaodashi = desktop + "信息报表\\0514外网表达式.txt";        //外网表达式
@@ -40,7 +45,7 @@ public class DBConnector {
         //统计列表
         CountSensitiveWords.countBySize();
         //详细信息
-        CountSensitiveWords.detail();
+//        CountSensitiveWords.detail();
     }
 
     /**

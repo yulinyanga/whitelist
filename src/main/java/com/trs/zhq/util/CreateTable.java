@@ -1,5 +1,6 @@
 package com.trs.zhq.util;
 
+import com.trs.zhq.config.DBConfig;
 import com.trs.zhq.entity.SpecialWord;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -45,7 +46,7 @@ public class CreateTable {
         header.setHeightInPoints(30);
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(DBConnector.countFile);
+            fos = new FileOutputStream(DBConfig.countFile);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

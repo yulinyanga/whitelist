@@ -3,11 +3,12 @@ package com.trs.zhq.util;
 import com.eprobiti.trs.TRSConnection;
 import com.eprobiti.trs.TRSException;
 import com.eprobiti.trs.TRSResultSet;
+import com.trs.zhq.config.DBConfig;
 
 import java.util.List;
 
 public class CountTotalRecordNum {
-    static DBConnector db = new DBConnector();
+    static DBConfig db = new DBConfig();
     static TRSConnection conn = null;
     static TRSResultSet rs = null;
 

@@ -3,6 +3,7 @@ package com.trs.zhq.util;
 import com.eprobiti.trs.TRSConnection;
 import com.eprobiti.trs.TRSException;
 import com.eprobiti.trs.TRSResultSet;
+import com.trs.zhq.config.DBConfig;
 import com.trs.zhq.entity.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -13,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CountSensitiveWords {
-    DBConnector db = new DBConnector();
+    DBConfig db = new DBConfig();
     TRSConnection conn = null;
     TRSResultSet rs = null;
 
@@ -163,31 +164,31 @@ public class CountSensitiveWords {
                     list.add(specialWord);
                     log += specialWord.toString() + "\r\n" + "\n" + "\n";
                 }
-            }else if("IR_CREATED_AT".equals(column)) {		//增加微博类型
-                list=new LinkedList();
-                for (int i = 0; i < rs.getRecordCount(); i++){
-                    WeiBo weibo=new WeiBo();
+            } else if ("IR_CREATED_AT".equals(column)) {        //增加微博类型
+                list = new LinkedList();
+                for (int i = 0; i < rs.getRecordCount(); i++) {
+                    WeiBo weibo = new WeiBo();
                     rs.moveTo(0, i);
-                    String id= rs.getString("IR_MID");
+                    String id = rs.getString("IR_MID");
                     weibo.setIR_MID(id);
-                    String sitename= rs.getString("IR_SITENAME");
+                    String sitename = rs.getString("IR_SITENAME");
                     weibo.setIR_SITENAME(sitename);
-                    String IR_SCREEN_NAME= rs.getString("IR_SCREEN_NAME");
+                    String IR_SCREEN_NAME = rs.getString("IR_SCREEN_NAME");
                     weibo.setIR_SCREEN_NAME(IR_SCREEN_NAME);
-                    String url= rs.getString("IR_URLNAME");
+                    String url = rs.getString("IR_URLNAME");
                     weibo.setIR_URLNAME(url);
-                    String words = rs.getString("IR_STATUS_CONTENT","red");
+                    String words = rs.getString("IR_STATUS_CONTENT", "red");
                     weibo.setIR_STATUS_CONTENT(words);
                     String[] wordsArray = words.split("<font color=red>");
                     String searchWords = "";
-                    for(int j=1; j<wordsArray.length; j++){
+                    for (int j = 1; j < wordsArray.length; j++) {
                         int index = wordsArray[j].indexOf("</font>");
-                        wordsArray[j] = wordsArray[j].substring(0,index);
-                        searchWords += wordsArray[j]+",";
+                        wordsArray[j] = wordsArray[j].substring(0, index);
+                        searchWords += wordsArray[j] + ",";
                     }
                     weibo.setKeyword(sameWordNums(searchWords));
                     list.add(weibo);
-                    log+=weibo.toString()+"\r\n"+"\n"+"\n";
+                    log += weibo.toString() + "\r\n" + "\n" + "\n";
                 }
             } else if ("FILENAME".equals(column)) {
                 list = new ArrayList();
@@ -243,27 +244,27 @@ public class CountSensitiveWords {
                     System.out.println("敏感词出现的次数：" + sameWordNums(searchWords));
                     list.add(fIleModel);
                 }
-            }else if ("FilePath".equals(column)) {
-                list=new LinkedList<FIleModel>();
-                for (int i = 0; i < rs.getRecordCount(); i++){
+            } else if ("FilePath".equals(column)) {
+                list = new LinkedList<FIleModel>();
+                for (int i = 0; i < rs.getRecordCount(); i++) {
                     rs.moveTo(0, i);
-                    FIleModel fIleModel=new FIleModel();
+                    FIleModel fIleModel = new FIleModel();
                     fIleModel.setFilename(rs.getString("FileName"));
                     fIleModel.setFilepath(rs.getString("FilePath"));
                     fIleModel.setIp(rs.getString("ip"));
-                    String words = rs.getString("WP_Content","red");
+                    String words = rs.getString("WP_Content", "red");
                     String[] wordsArray = words.split("<font color=red>");
                     String searchWords = "";
-                    for(int j=1; j<wordsArray.length; j++){
+                    for (int j = 1; j < wordsArray.length; j++) {
                         int index = wordsArray[j].indexOf("</font>");
-                        wordsArray[j] = wordsArray[j].substring(0,index);
-                        searchWords += wordsArray[j]+",";
+                        wordsArray[j] = wordsArray[j].substring(0, index);
+                        searchWords += wordsArray[j] + ",";
                     }
                     fIleModel.setKey(sameWordNums(searchWords));
                     System.out.println("敏感词出现的次数：" + sameWordNums(searchWords));
                     list.add(fIleModel);
                 }
-            }else if ("Y_ID".equals(column)) {
+            } else if ("Y_ID".equals(column)) {
                 list = new ArrayList<JCMS>();
                 for (int i = 0; i < rs.getRecordCount(); i++) {
                     rs.moveTo(0, i);
@@ -309,7 +310,7 @@ public class CountSensitiveWords {
                 }*/
             }
 
-            File file = new File(DBConnector.logPath);
+            File file = new File(DBConfig.logPath);
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(log.getBytes());
             fileOutputStream.close();
@@ -402,13 +403,46 @@ public class CountSensitiveWords {
         }
     }
 
+    //排除白名单
+    public static Map<String, Boolean> filterWhiteList(String username) {
+        String sUserName = "system";
+        String sPassWord = "manager";
+        TRSConnection trscon = null;
+        Map<String, Boolean> whiteMap = null;
+        try {
+            // 建立连接
+            trscon = new TRSConnection();
+            trscon.connect(DBConfig.DB_URL_WHITELIST, DBConfig.DB_PORT_WHITELIST, sUserName, sPassWord);
+            //查询白名单，遍历
+            TRSResultSet rs = new TRSResultSet();
+            whiteMap = new HashMap<>();
+            rs.setConnection(trscon);
+            rs.executeSelect(DBConfig.DB_TABLE_WHITELIST, "username=" + username, false);
+            System.out.println(rs.getRecordCount());
+            for (int j = 0; j < rs.getRecordCount(); j++) {
+                rs.moveTo(0, j);
+                whiteMap.put(rs.getString("url"), true);
+            }
+        } catch (TRSException ex) {
+            // 输出错误信息
+            System.out.println(ex.getErrorCode() + ":" + ex.getErrorString());
+            ex.printStackTrace();
+        } finally {
+            // 关闭连接
+            if (trscon != null) trscon.close();
+            trscon = null;
+        }
+        return whiteMap;
+    }
+
     /**
      * 这个主方法是为了生成疑似信息详细列表
      */
-    public static void detail() throws IOException {
+    public static void detail(String username) throws IOException {
+        Map<String, Boolean> whiteMap = filterWhiteList(username);
         CountSensitiveWords csw = new CountSensitiveWords();
-        String serverTable = DBConnector.serverTable;
-        String[] filePath = new String[]{DBConnector.biaodashi};
+        String serverTable = DBConfig.serverTable;
+        String[] filePath = new String[]{DBConfig.biaodashi};
         String[] where = ConcatSiteName.getAllSiteNAme(serverTable);
         //使用数据库的的列来区分数据库
         String column = ConcatSiteName.getColumnName(serverTable);
@@ -429,31 +463,26 @@ public class CountSensitiveWords {
             header.createCell(4).setCellValue("检索词");
             //定义出异常的数量
             int q = 0;
-//                    list = csw.searchMessage(serverTable, DBConnector.siteList+"IR_CONTENT=%"+getSensitiveWords(filePath[0])+"%", false);
-                    list = csw.searchMessage(serverTable, "(中海石油,海油,海洋石油) AND IR_CONTENT=%"+getSensitiveWords(filePath[0])+"%", false);
-                    for (int z = 1; z < list.size() + 1; z++) {
-                        q = q + 1;
-                        WeiXin weiXin = list.get(z - 1);
-                        XSSFRow header2 = sheet.createRow(q);
-                        header2.createCell(0).setCellValue(q);
-                        header2.createCell(1).setCellValue(weiXin.getIR_WEIXINID());
-                        header2.createCell(2).setCellValue(weiXin.getFileName());
-                        header2.createCell(3).setCellValue(weiXin.getIR_URLNAME());
+            list = csw.searchMessage(serverTable, DBConfig.siteList + "IR_CONTENT=%" + getSensitiveWords(filePath[0]) + "%", false);
+//                    list = csw.searchMessage(serverTable, "(中海石油,海油,海洋石油) AND IR_CONTENT=%"+getSensitiveWords(filePath[0])+"%", false);
+            for (int z = 1; z < list.size() + 1; ) {
+                q = q + 1;
+                WeiXin weiXin = list.get(z - 1);
+                if (whiteMap.get(weiXin.getIR_URLNAME()) == null) continue;
+                XSSFRow header2 = sheet.createRow(q);
+                header2.createCell(0).setCellValue(q);
+                header2.createCell(1).setCellValue(weiXin.getIR_WEIXINID());
+                header2.createCell(2).setCellValue(weiXin.getFileName());
+                header2.createCell(3).setCellValue(weiXin.getIR_URLNAME());
 //                        header2.createCell(5).setCellValue(weiXin.getIR_CONTENT());
-                        header2.createCell(6).setCellValue(weiXin.getIR_HKEY());
-                        header2.createCell(4).setCellValue(weiXin.getKeyword());
-                    }
-                    bugNum = bugNum + list.size();
-            header.createCell(5).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
+                header2.createCell(6).setCellValue(weiXin.getIR_HKEY());
+                header2.createCell(4).setCellValue(weiXin.getKeyword());
+                z++;
+            }
+            bugNum = bugNum + list.size();
+            header.createCell(5).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + (list.size() - 1));
         } else if ("IR_SID".equals(column)) {
             List<SpecialWord> list = new ArrayList<>();
-            /*header.createCell(0).setCellValue("IR_ID");
-            header.createCell(1).setCellValue("链接地址");
-            header.createCell(2).setCellValue("链接内容");
-            header.createCell(3).setCellValue("网站名称");
-            header.createCell(4).setCellValue("频道名称");
-            header.createCell(5).setCellValue("组名");
-            header.createCell(6).setCellValue("检索词");*/
             header.createCell(0).setCellValue("序号");
             header.createCell(1).setCellValue("单位名称");
             header.createCell(2).setCellValue("应用分类");
@@ -466,19 +495,15 @@ public class CountSensitiveWords {
             int q = 0;
             for (int j = 0; j < where.length; j++) {
                 for (int i = 0; i < filePath.length; i++) {
+                    String url = "";
                     list = csw.searchMessage(serverTable, where[j] + getSensitiveWords(filePath[i]) + "%)", false);
-                    for (int z = 1; z < list.size() + 1; z++) {
+                    for (int z = 1; z < list.size() + 1; ) {
                         q = q + 1;
                         SpecialWord specialWord = list.get(z - 1);
+                        url = specialWord.getUrl();
+                        //去除白名单
+                        if (whiteMap.get(url) == null) continue;
                         XSSFRow header2 = sheet.createRow(q);
-                        /*header2.createCell(0).setCellValue(specialWord.getId());
-                        header2.createCell(1).setCellValue(specialWord.getUrl());
-                        header2.createCell(2).setCellValue(specialWord.getContent());
-                        header2.createCell(3).setCellValue(specialWord.getSiteName());
-                        header2.createCell(4).setCellValue(specialWord.getChannel());
-                        header2.createCell(5).setCellValue(specialWord.getGroupname());
-                        header2.createCell(6).setCellValue(specialWord.getKeyword());
-                        header2.createCell(7).setCellValue(specialWord.getKeyword());*/
                         String siteName = specialWord.getSiteName();
                         System.out.println(siteName);
                         String code = "";
@@ -493,17 +518,18 @@ public class CountSensitiveWords {
                         String date = sdf.format(time);
                         header2.createCell(0).setCellValue(q);
                         header2.createCell(1).setCellValue(unitName);
-                        header2.createCell(2).setCellValue(DBConnector.groupType);
+                        header2.createCell(2).setCellValue(DBConfig.groupType);
                         header2.createCell(3).setCellValue(code);
                         header2.createCell(4).setCellValue(specialWord.getChannel());
-                        header2.createCell(5).setCellValue(specialWord.getUrl());
+                        header2.createCell(5).setCellValue(url);
                         header2.createCell(6).setCellValue(specialWord.getKeyword());
                         header2.createCell(7).setCellValue(date);
+                        z++;
                     }
                     bugNum = bugNum + list.size();
                 }
             }
-            header.createCell(8).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
+            header.createCell(8).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + (list.size() - 1));
 
         } else if ("FileName".equals(column)) {
             List<FIleModel> list = new ArrayList<>();
@@ -533,8 +559,8 @@ public class CountSensitiveWords {
             }
             header.createCell(4).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
 
-        }else if("IR_CREATED_AT".equals(column)) {//增加微博库的类型
-            List<WeiBo> list=new LinkedList<>();
+        } else if ("IR_CREATED_AT".equals(column)) {//增加微博库的类型
+            List<WeiBo> list = new LinkedList<>();
             header.createCell(0).setCellValue("IR_MID");
             header.createCell(1).setCellValue("IR_SCREEN_NAME");
             header.createCell(2).setCellValue("IR_SITENAME");
@@ -542,34 +568,31 @@ public class CountSensitiveWords {
             header.createCell(4).setCellValue("内容");
             header.createCell(5).setCellValue("检索词");
             //定义出异常的数量
-            int q=0;
-
-//			for(int j=0; j<where.length; j++) {
-//				for(int i=0; i<filePath.length; i++) {
-//					String str=where[j]+getSensitiveWords(filePath[i])+"%)";
-//					System.out.println("where[j]"+where[j]);
-            //list = csw.searchMessage(serverTable,where[j]+getSensitiveWords(filePath[i])+"%) and (IR_AUTHORS=%中国海油% or IR_AUTHORS=%海油螺号% or IR_AUTHORS=%海油思享汇% )",false);
-            list = csw.searchMessage(serverTable,"IR_STATUS_CONTENT=(%"+getSensitiveWords(filePath[0])	+"%)",false);
+            int q = 0;
+            list = csw.searchMessage(serverTable, "IR_STATUS_CONTENT=(%" + getSensitiveWords(filePath[0]) + "%)", false);
             //list = csw.searchMessage(serverTable,"IR_SITENAME=(海油螺号,图说海油) and IR_STATUS_CONTENT=%"+getSensitiveWords(filePath[i])+"%",false);
-            for(int z=1;z<list.size()+1;z++) {
-                q=q+1;
-                WeiBo weiBo =list.get(z-1);
-                XSSFRow header2=sheet.createRow(q);
+            for (int z = 1; z < list.size() + 1; ) {
+                q = q + 1;
+                WeiBo weiBo = list.get(z - 1);
+                //去除白名单
+                if (whiteMap.get(weiBo.getIR_URLNAME()) == null) continue;
+                XSSFRow header2 = sheet.createRow(q);
                 header2.createCell(0).setCellValue(weiBo.getIR_MID());
                 header2.createCell(1).setCellValue(weiBo.getIR_SCREEN_NAME());
                 header2.createCell(2).setCellValue(weiBo.getIR_SITENAME());
                 header2.createCell(3).setCellValue(weiBo.getIR_URLNAME());
                 header2.createCell(4).setCellValue(weiBo.getIR_STATUS_CONTENT());
                 header2.createCell(5).setCellValue(weiBo.getKeyword());
+                z++;
             }
-            bugNum=bugNum+list.size();
+            bugNum = bugNum + list.size();
             System.out.println("");
 //				}
 //			}
-            header.createCell(6).setCellValue("记录数总量: "+CountTotalRecordNum.getDataNumAll(serverTable)+"   异常数量为:"+bugNum);
+            header.createCell(6).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
 
-        }else if("id".equals(column)) {
-            List<JCMS> list=new LinkedList<>();
+        } else if ("id".equals(column)) {
+            List<JCMS> list = new LinkedList<>();
             header.createCell(0).setCellValue("id");
             header.createCell(1).setCellValue("ip");
             header.createCell(2).setCellValue("数据库名称");
@@ -577,15 +600,15 @@ public class CountSensitiveWords {
             header.createCell(4).setCellValue("文本");
             header.createCell(5).setCellValue("检索词");
             //定义出异常的数量
-            int q=0;
-            for(int j=0; j<where.length; j++) {
-                for(int i=0; i<filePath.length; i++) {
-                    String str=where[j]+getSensitiveWords(filePath[i])+"%)";
-                    list = csw.searchMessage(serverTable,where[j]+getSensitiveWords(filePath[i])+"%)",false);
-                    for(int z=1;z<list.size()+1;z++) {
-                        q=q+1;
-                        JCMS jcms=list.get(z-1);
-                        XSSFRow header2=sheet.createRow(q);
+            int q = 0;
+            for (int j = 0; j < where.length; j++) {
+                for (int i = 0; i < filePath.length; i++) {
+                    String str = where[j] + getSensitiveWords(filePath[i]) + "%)";
+                    list = csw.searchMessage(serverTable, where[j] + getSensitiveWords(filePath[i]) + "%)", false);
+                    for (int z = 1; z < list.size() + 1; z++) {
+                        q = q + 1;
+                        JCMS jcms = list.get(z - 1);
+                        XSSFRow header2 = sheet.createRow(q);
                         header2.createCell(0).setCellValue(jcms.getSID());
                         header2.createCell(1).setCellValue(jcms.getSIP());
                         header2.createCell(2).setCellValue(jcms.getDb_name());
@@ -593,13 +616,13 @@ public class CountSensitiveWords {
                         header2.createCell(4).setCellValue(jcms.getTrscontent());
                         header2.createCell(5).setCellValue(jcms.getKeyword());
                     }
-                    bugNum=bugNum+list.size();
+                    bugNum = bugNum + list.size();
                     System.out.println("");
                 }
             }
-            header.createCell(6).setCellValue("记录数总量: "+CountTotalRecordNum.getDataNumAll(serverTable)+"   异常数量为:"+bugNum);
-        }else if("Y_ID".equals(column)) {
-            List<JCMS> list=new LinkedList<>();
+            header.createCell(6).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
+        } else if ("Y_ID".equals(column)) {
+            List<JCMS> list = new LinkedList<>();
             header.createCell(0).setCellValue("id");
             header.createCell(1).setCellValue("ip");
             header.createCell(2).setCellValue("数据库名称");
@@ -607,15 +630,15 @@ public class CountSensitiveWords {
             header.createCell(4).setCellValue("文本");
             header.createCell(5).setCellValue("检索词");
             //定义出异常的数量
-            int q=0;
-            for(int j=0; j<where.length; j++) {
-                for(int i=0; i<filePath.length; i++) {
-                    String str=where[j]+getSensitiveWords(filePath[i])+"%)";
-                    list = csw.searchMessage(serverTable,where[j]+getSensitiveWords(filePath[i])+"%)",false);
-                    for(int z=1;z<list.size()+1;z++) {
-                        q=q+1;
-                        JCMS jcms=list.get(z-1);
-                        XSSFRow header2=sheet.createRow(q);
+            int q = 0;
+            for (int j = 0; j < where.length; j++) {
+                for (int i = 0; i < filePath.length; i++) {
+                    String str = where[j] + getSensitiveWords(filePath[i]) + "%)";
+                    list = csw.searchMessage(serverTable, where[j] + getSensitiveWords(filePath[i]) + "%)", false);
+                    for (int z = 1; z < list.size() + 1; z++) {
+                        q = q + 1;
+                        JCMS jcms = list.get(z - 1);
+                        XSSFRow header2 = sheet.createRow(q);
                         header2.createCell(0).setCellValue(jcms.getSID());
                         header2.createCell(1).setCellValue(jcms.getSIP());
                         header2.createCell(2).setCellValue(jcms.getDb_name());
@@ -623,11 +646,11 @@ public class CountSensitiveWords {
                         header2.createCell(4).setCellValue(jcms.getTrscontent());
                         header2.createCell(5).setCellValue(jcms.getKeyword());
                     }
-                    bugNum=bugNum+list.size();
+                    bugNum = bugNum + list.size();
                     System.out.println("");
                 }
             }
-            header.createCell(6).setCellValue("记录数总量: "+CountTotalRecordNum.getDataNumAll(serverTable)+"   异常数量为:"+bugNum);
+            header.createCell(6).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
         }
         //设置列的宽度
         for (int i = 0; i < header.getPhysicalNumberOfCells(); i++) {
@@ -636,7 +659,7 @@ public class CountSensitiveWords {
         header.setHeightInPoints(30);
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(DBConnector.detailFile);
+            fos = new FileOutputStream(DBConfig.detailFile);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -660,8 +683,8 @@ public class CountSensitiveWords {
      * @throws IOException
      */
     public static void countBySize() throws IOException {
-        String serverTable = DBConnector.serverTable;
-        String[] filePath = {DBConnector.biaodashi};
+        String serverTable = DBConfig.serverTable;
+        String[] filePath = {DBConfig.biaodashi};
         //使用数据库的的列来区分数据库
         String column = ConcatSiteName.getColumnName(serverTable);
         String column3 = ConcatSiteName.getColumnName3(serverTable);
@@ -672,10 +695,10 @@ public class CountSensitiveWords {
             String columnname = "微信名称";
             //创建表格
             CreateTable.create(serverTable, columnname, hashMapSpecialAll);
-        }else if("IR_CREATED_AT".equals(column)) {
+        } else if ("IR_CREATED_AT".equals(column)) {
             //增加敏感词的map集合
-            HashMap<String,Integer> hashMapSpecialAll=ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname="微博名称";
+            HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
+            String columnname = "微博名称";
             //创建表格
             CreateTable.create(serverTable, columnname, hashMapSpecialAll);
         } else if ("IR_SID".equals(column)) {            //增加微博库的类型
@@ -693,7 +716,7 @@ public class CountSensitiveWords {
             String columnname = "表名称";
             //创建表格
             CreateTable.create(serverTable, columnname, hashMapSpecialAll);
-        }else if ("Y_ID".equals(column)) {
+        } else if ("Y_ID".equals(column)) {
             HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
             String columnname = "表名称";
             //创建表格

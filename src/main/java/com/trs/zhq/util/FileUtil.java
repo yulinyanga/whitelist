@@ -5,6 +5,8 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Expand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ResourceUtils;
+
 import java.io.*;
 
 
@@ -129,4 +131,19 @@ public final class FileUtil {
 			e.printStackTrace();
 		}
 	}
+
+	public static String getJarRootPath() throws FileNotFoundException {
+		String path = ResourceUtils.getURL("classpath:").getPath();
+		//=> file:/root/tmp/demo-springboot-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/
+		//创建File时会自动处理前缀和jar包路径问题  => /root/tmp
+		File rootFile = new File(path);
+		if(!rootFile.exists()) {
+			System.out.println("根目录不存在, 重新创建");
+			rootFile = new File("");
+			System.out.println("重新创建的根目录: "+rootFile.getAbsolutePath());
+		}
+		System.out.println("项目根目录: "+rootFile.getAbsolutePath());        //获取的字符串末尾没有分隔符 /
+		return rootFile.getAbsolutePath();
+	}
+
 }

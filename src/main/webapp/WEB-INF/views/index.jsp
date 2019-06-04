@@ -54,7 +54,7 @@
 	layui.use('upload', function(){
 		layui.upload({
 			url: '<%=basePath %>importWhiteList'
-			,ext: 'zip'
+			,ext: 'xls|xlsx'
 			, dataType: "json"
 			,before: function(input){
 				//返回的参数item，即为当前的input DOM对象

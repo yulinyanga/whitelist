@@ -2,12 +2,13 @@ package com.trs.zhq.util;
 
 import com.eprobiti.trs.*;
 import com.trs.client.TRSConstant;
+import com.trs.zhq.config.DBConfig;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class ConcatSiteName {
-    static DBConnector db = new DBConnector();
+    static DBConfig db = new DBConfig();
     static TRSConnection conn = null;
     static TRSResultSet rs = null;
 
@@ -50,8 +51,6 @@ public class ConcatSiteName {
                 iClassNum = rs.classResult("SIP", "", 10, "", false,
                         false);
             }
-
-
             System.out.println("ClassCount= " + rs.getClassCount());
             allsitename = new String[iClassNum];
             for (int i = 0; i < iClassNum; i++) {
