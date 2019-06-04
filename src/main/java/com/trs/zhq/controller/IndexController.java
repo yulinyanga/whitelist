@@ -10,9 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.net.URLEncoder;
 
 
 @Controller
@@ -52,13 +51,36 @@ public class IndexController {
     }
 
     @RequestMapping("exportData")
-    public String exportData(String username) {
+    public String exportData(String username,HttpServletRequest request,HttpServletResponse response) {
         DBConfig.DB_URL = "127.0.0.1";
         username = "ceshi";
         //统计列表
         try {
 //            CountSensitiveWords.countBySize();
             CountSensitiveWords.detail(username);
+            String filename = System.currentTimeMillis() + "疑似信息.xlsx";
+
+            //解决firefox的文件名乱码
+            String agent = request.getHeader("USER-AGENT");
+//            response.setContentType("application/octet-stream");
+            // 1.设置文件ContentType类型，这样设置，会自动判断下载文件类型
+            response.setContentType("application/vnd.ms-excel");
+            if (agent != null && agent.toLowerCase().indexOf("firefox") > 0) {
+                String downloadName = new String(filename.getBytes("GB2312"), "ISO-8859-1");
+                response.setHeader("Content-Disposition", "attachment; filename=" + downloadName);
+            } else {
+                // 2.设置文件头：最后一个参数是设置下载文件名(假如我们叫a.pdf)
+                response.setHeader("Content-Disposition", "attachment;fileName="
+                        + URLEncoder.encode(filename, "UTF-8"));
+            }
+
+            OutputStream os = response.getOutputStream();
+            InputStream is = new FileInputStream(DBConfig.detailFile);
+            byte[] bytes = new byte[1024 * 8];
+            int len = -1;
+            while ((len = is.read(bytes)) != -1) {
+                os.write(bytes, 0, len);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
