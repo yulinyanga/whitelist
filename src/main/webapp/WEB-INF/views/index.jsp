@@ -20,16 +20,19 @@
 </head>
 <body>
 <div>
-	<form id="exportForm" action="">
+	<form id="exportForm" action="<%=basePath %>exportData">
 		<br>
 		<span>&nbsp;&nbsp;&nbsp;&nbsp;用户名：</span>
-		<input type="text" name="userName" />
+		<input id="userName" type="text" name="userName" />
+		<span style="color: red;">（*必填）</span>
 		<br><br>
 		<span>&nbsp;&nbsp;&nbsp;&nbsp;关键词：</span>
 		<textarea name="keyWord" style="height: 160px;width: 400px;"></textarea>
+		<span style="color: red;">（提示：请将关键词用英文逗号隔开填入框内。）</span>
 		<br><br>
 		<span>目标网站：</span>
 		<textarea name="siteList" style="height: 160px;width: 400px;"></textarea>
+		<span style="color: red;">（提示：请将目标网站的主编码用英文逗号隔开填入框内。）</span>
 		<br><br>
 		<span>网站类别：</span>
 		<input id="web" name="siteType" type="radio" checked="checked" value="1" />普通网站
@@ -37,7 +40,7 @@
 		<input id="weixin" name="siteType" type="radio" value="3" />微信
 		<br><br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="file" id="whitelist" name="file" lay-title="上传白名单" lay-type="file" class="layui-upload-file" />
+		<input type="file" id="whitelist" disabled name="file" lay-title="上传白名单" lay-type="file" class="layui-upload-file" />
 		<input type="button" id="export" name="export" value="导出数据" onclick="exportData()" class="layui-btn layui-btn-normal" style="margin-left: 40px;" />
 	</form>
 </div>
@@ -45,8 +48,22 @@
 </body>
 <script type="text/javascript">
 
+	$("#userName").blur(function(){
+		if (this.value!=null&&this.value!=""&&this.value.trim()!=null&&this.value.trim()!="") {
+			$("#whitelist").attr("disabled",false);
+		}else{
+			$("#whitelist").attr("disabled",true);
+		}
+
+	})
+
 	function exportData(){
-		$("#exportForm").submit();
+		if ($("#userName").val()!=null&&$("#userName").val()!=""&&$("#userName").val().trim()!=null&&$("#userName").val().trim()!="") {
+			$("#exportForm").submit();
+		}else{
+			alert("用户名不能为空！");
+		}
+
 	}
 
 </script>
