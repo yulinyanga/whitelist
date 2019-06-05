@@ -65,7 +65,12 @@
 
     function exportData() {
         if ($("#userName").val() != null && $("#userName").val() != "" && $("#userName").val().trim() != null && $("#userName").val().trim() != "") {
-            $("#exportForm").submit();
+            var ifexport = confirm("是否导出数据？(数据量较大，请耐心等待。)")
+            if (ifexport == true) {
+                $("#exportForm").submit();
+            }else{
+
+            }
         } else {
             alert("用户名不能为空！");
         }
