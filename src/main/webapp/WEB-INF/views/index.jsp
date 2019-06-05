@@ -24,14 +24,14 @@
         <br>
         <span style="width: 20px;">用户名：</span>
         <input id="userName" type="text" name="userName"/>
-        <span style="color: red;">（*必填）</span>
+        <span style="color: red;">（*导出数据必填）</span>
         <br><br>
         <span style="width: 20px;">关键词：</span>
-        <textarea name="keyWord" style="height: 160px;width: 400px;"></textarea>
+        <textarea id="keyWord" name="keyWord" style="height: 160px;width: 400px;"></textarea>
         <span style="color: red;">（提示：请将关键词用英文逗号隔开填入框内。）</span>
         <br><br>
         <span style="width: 20px;">目标网站：</span>
-        <textarea name="siteList" style="height: 160px;width: 400px;"></textarea>
+        <textarea id="siteList" name="siteList" style="height: 160px;width: 400px;"></textarea>
         <span style="color: red;">（提示：请将目标网站的主编码用英文逗号隔开填入框内。）</span>
         <br><br>
         <span style="width: 20px;">网站类别：</span>
@@ -41,7 +41,7 @@
         <input id="weixin" name="siteType" type="radio" value="3"/>微信
         <br/><br/>
         <div style="display: inline-block;margin-left: 40px;width: 2px;"></div>
-        <input type="file" id="whitelist" disabled name="file" lay-title="上传白名单" lay-type="file"
+        <input type="file" id="whitelist" name="file" lay-title="上传白名单" lay-type="file"
                class="layui-upload-file"/>
         <input type="button" id="export" name="export" value="导出数据" onclick="exportData()"
                class="layui-btn layui-btn-normal" style="margin-left: 40px;"/>
@@ -54,23 +54,42 @@
 </body>
 <script type="text/javascript">
 
-    $("#userName").blur(function () {
+    /*$("#userName").blur(function () {
         if (this.value != null && this.value != "" && this.value.trim() != null && this.value.trim() != "") {
             $("#whitelist").attr("disabled", false);
         } else {
             $("#whitelist").attr("disabled", true);
         }
 
-    })
+    })*/
 
     function exportData() {
-        if ($("#userName").val() != null && $("#userName").val() != "" && $("#userName").val().trim() != null && $("#userName").val().trim() != "") {
-            var ifexport = confirm("是否导出数据？(数据量较大，请耐心等待。)")
-            if (ifexport == true) {
-                $("#exportForm").submit();
-            }else{
+        var username = $("#userName").val();
+        var keyword = $("#keyWord").val();
+        var siteList = $("#siteList").val();
+        if (username != null && username != "" && username.trim() != null && username.trim() != "") {
+            if (username=="cnoocadmin"){
+                var ifexport = confirm("是否导出数据？(数据量较大，请耐心等待。)")
+                if (ifexport == true) {
+                    $("#exportForm").submit();
+                }else{
 
+                }
+            }else{
+                if(keyword == null || keyword == "" || keyword.trim() == null || keyword.trim() == ""){
+                    alert("关键词不能为空！");
+                }/*else if (siteList == null || siteList == "" || siteList.trim() == null || siteList.trim() == "") {
+                    alert("目标网站不能为空！");
+                }*/else{
+                    var ifexport = confirm("是否导出数据？(数据量较大，请耐心等待。)")
+                    if (ifexport == true) {
+                        $("#exportForm").submit();
+                    }else{
+
+                    }
+                }
             }
+
         } else {
             alert("用户名不能为空！");
         }
