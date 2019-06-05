@@ -85,6 +85,7 @@ public class IndexController {
         Boolean isAdmin = false;
         if ("cnoocadmin".equals(userName)) {
             isAdmin = true;
+            userName = "%";
             if (siteType == 1) {
                 DBConfig.biaodashi = DBConfig.biaodashi_intranet;
             } else {
@@ -125,7 +126,7 @@ public class IndexController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "";
+        return "true";
     }
 
 }

@@ -15,16 +15,16 @@ import java.time.LocalDate;
  */
 public class DBConfig {
     //todo 在导出前更新 ip 库名 数据库类型 表达式 存放路径(desktop、countFile、detailFile、logPath)
-//    public final static String DB_URL_WHITELIST = "10.72.76.73";      //白名单ip
-    public final static String DB_URL_WHITELIST = "127.0.0.1";      //白名单ip
+    public final static String DB_URL_WHITELIST = "10.72.76.73";      //白名单ip
+//    public final static String DB_URL_WHITELIST = "127.0.0.1";      //白名单ip
     public final static String DB_PORT_WHITELIST = "8888";      //白名单port
     public final static String DB_TABLE_WHITELIST = "white";        //TRSServer数据库名  WeiXin  WeiBo
 
-    public final static String DB_URL_WEB = "127.0.0.1";      //网站
+    public final static String DB_URL_WEB = "10.72.76.73";      //网站
     public final static String DB_URL_WEI = "10.72.76.89";      //微博微信
     public static String DB_URL = "";      //外网
-//    public static String TABLE_WEB = "AS$37$68$1";          //0529www
-    public static String TABLE_WEB = "AS$8$14$1";          //ceshi
+    public static String TABLE_WEB = "AS$37$68$1";          //0529www
+//    public static String TABLE_WEB = "AS$8$14$1";          //ceshi
     public static String TABLE_INTRANET = "AS$2D$58$1";     //051702_nw
     public static String TABLE_WEIXIN = "WeiXin0524";
     public static String TABLE_WEINBO = "WeiBo0521";
