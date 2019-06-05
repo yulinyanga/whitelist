@@ -46,6 +46,9 @@
         <input type="button" id="export" name="export" value="导出数据" onclick="exportData()"
                class="layui-btn layui-btn-normal" style="margin-left: 40px;"/>
     </form>
+    <div id="loading"  style="width: 100%;background: rgba(0, 0, 0, 0.22);height: 100%;position: fixed;top: 0px;left: 0px;display: none">
+        <img title="Adapter正在运行" style="position: absolute;top: 50%;left: 50%;margin-left: -64px;margin-top: -64px;" src="<%=request.getContextPath()%>/images/loader2.gif">
+    </div>
 </div>
 
 </body>
