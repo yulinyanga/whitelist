@@ -22,19 +22,19 @@
 <div style="margin-left: 60px;">
     <form id="exportForm" action="<%=basePath %>exportData">
         <br>
-        <span>&nbsp;&nbsp;&nbsp;&nbsp;用户名：</span>
+        <span style="width: 20px;">用户名：</span>
         <input id="userName" type="text" name="userName"/>
         <span style="color: red;">（*必填）</span>
         <br><br>
-        <span>&nbsp;&nbsp;&nbsp;&nbsp;关键词：</span>
+        <span style="width: 20px;">关键词：</span>
         <textarea name="keyWord" style="height: 160px;width: 400px;"></textarea>
         <span style="color: red;">（提示：请将关键词用英文逗号隔开填入框内。）</span>
         <br><br>
-        <span>目标网站：</span>
+        <span style="width: 20px;">目标网站：</span>
         <textarea name="siteList" style="height: 160px;width: 400px;"></textarea>
         <span style="color: red;">（提示：请将目标网站的主编码用英文逗号隔开填入框内。）</span>
         <br><br>
-        <span>网站类别：</span>
+        <span style="width: 20px;">网站类别：</span>
         <input id="web" name="siteType" type="radio" checked="checked" value="0"/>外部网站
         <input id="intranet" name="siteType" type="radio" value="1"/>内部网站
         <input id="weibo" name="siteType" type="radio" value="2"/>微博
