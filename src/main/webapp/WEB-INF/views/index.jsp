@@ -19,7 +19,7 @@
 
 </head>
 <body>
-<div>
+<div style="margin-left: 60px;">
     <form id="exportForm" action="<%=basePath %>exportData">
         <br>
         <span>&nbsp;&nbsp;&nbsp;&nbsp;用户名：</span>
@@ -39,15 +39,15 @@
         <input id="intranet" name="siteType" type="radio" value="1"/>内部网站
         <input id="weibo" name="siteType" type="radio" value="2"/>微博
         <input id="weixin" name="siteType" type="radio" value="3"/>微信
-        <br><br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <br/><br/>
+        <div style="display: inline-block;margin-left: 40px;width: 2px;"></div>
         <input type="file" id="whitelist" disabled name="file" lay-title="上传白名单" lay-type="file"
                class="layui-upload-file"/>
         <input type="button" id="export" name="export" value="导出数据" onclick="exportData()"
                class="layui-btn layui-btn-normal" style="margin-left: 40px;"/>
     </form>
     <div id="loading"  style="width: 100%;background: rgba(0, 0, 0, 0.22);height: 100%;position: fixed;top: 0px;left: 0px;display: none">
-        <img title="Adapter正在运行" style="position: absolute;top: 50%;left: 50%;margin-left: -64px;margin-top: -64px;" src="<%=request.getContextPath()%>/images/loader2.gif">
+        <img title="Adapter正在运行" style="position: absolute;top: 50%;left: 50%;margin-left: -64px;margin-top: -64px;" src="<%=basePath %>/images/loader2.gif">
     </div>
 </div>
 

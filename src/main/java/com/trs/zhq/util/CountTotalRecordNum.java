@@ -34,7 +34,7 @@ public class CountTotalRecordNum {
     }
 
     /**
-     * 获取指网站的数量
+     * 获取指定网站的数量
      *
      * @param tableName
      * @return

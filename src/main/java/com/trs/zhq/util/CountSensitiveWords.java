@@ -36,7 +36,7 @@ public class CountSensitiveWords {
         try {
             rs = new TRSResultSet();
             rs = conn.executeSelect(tableName, sensitiveWords, isContinue);
-            System.out.println(sensitiveWords);
+            System.out.println("server检索词：" + sensitiveWords);
             num = rs.getRecordCount();
             //循环添加疑似信息
             String log = "";
@@ -62,6 +62,7 @@ public class CountSensitiveWords {
                         searchWords += wordsArray[j] + ",";
                     }
                     weiXin.setKeyword(sameWordNums(searchWords));
+                    System.out.println("敏感词出现的次数：" + sameWordNums(searchWords));
                     list.add(weiXin);
                 }
             }
@@ -197,11 +198,25 @@ public class CountSensitiveWords {
      */
     public static String getSensitiveWords(String filePath) {
         String sensitiveWords = "";
-        try (FileReader reader = new FileReader(filePath);
-             BufferedReader br = new BufferedReader(reader)) {
+        FileReader reader = null;
+        BufferedReader br = null;
+        try {
+            reader = new FileReader(filePath);
+            br = new BufferedReader(reader);
             sensitiveWords = br.readLine();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return sensitiveWords;
     }
@@ -240,7 +255,7 @@ public class CountSensitiveWords {
             whiteMap = new HashMap<>();
             rs.setConnection(trscon);
             rs.executeSelect(DBConfig.DB_TABLE_WHITELIST, "username=" + username, false);
-            System.out.println(rs.getRecordCount());
+            System.out.println("检索到的白名单数量： " + rs.getRecordCount());
             for (int j = 0; j < rs.getRecordCount(); j++) {
                 rs.moveTo(0, j);
                 whiteMap.put(rs.getString("url"), true);
@@ -264,10 +279,8 @@ public class CountSensitiveWords {
         Map<String, Boolean> whiteMap = filterWhiteList(username);
         CountSensitiveWords csw = new CountSensitiveWords();
         String serverTable = DBConfig.serverTable;
-        String[] where = ConcatSiteName.getAllSiteNAme(serverTable);
         //使用数据库的的列来区分数据库
         String column = ConcatSiteName.getColumnName(serverTable);
-        String column3 = ConcatSiteName.getColumnName3(serverTable);
         //增加数据库的判断
         XSSFWorkbook wb = new XSSFWorkbook();
         XSSFSheet sheet = wb.createSheet("疑似信息列表");
@@ -308,7 +321,7 @@ public class CountSensitiveWords {
             bugNum = bugNum + list.size();
             header.createCell(5).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + (list.size() - 1));
         } else if ("IR_SID".equals(column)) {
-            List<SpecialWord> list = new ArrayList<>();
+            List<SpecialWord> list;
             header.createCell(0).setCellValue("序号");
             header.createCell(1).setCellValue("单位名称");
             header.createCell(2).setCellValue("应用分类");
@@ -321,7 +334,7 @@ public class CountSensitiveWords {
             int q = 0;
             String url;
             list = csw.searchMessage(serverTable, exp, false);
-            for (int z = 1; z < list.size() + 1; ) {
+            for (int z = 1; z < list.size() + 1; z++) {
                 SpecialWord specialWord = list.get(z - 1);
                 url = specialWord.getUrl();
                 //去除白名单
@@ -348,13 +361,12 @@ public class CountSensitiveWords {
                 header2.createCell(5).setCellValue(url);
                 header2.createCell(6).setCellValue(specialWord.getKeyword());
                 header2.createCell(7).setCellValue(date);
-                z++;
             }
             bugNum = bugNum + list.size();
             header.createCell(8).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + (list.size() - 1));
 
         } else if ("FileName".equals(column)) {
-            List<FIleModel> list = new ArrayList<>();
+            List<FIleModel> list;
             header.createCell(0).setCellValue("文件名");
             header.createCell(1).setCellValue("文件地址");
             header.createCell(2).setCellValue("ip");
@@ -376,7 +388,7 @@ public class CountSensitiveWords {
             header.createCell(4).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
 
         } else if ("IR_CREATED_AT".equals(column)) {//增加微博库的类型
-            List<WeiBo> list = new LinkedList<>();
+            List<WeiBo> list;
             header.createCell(0).setCellValue("IR_MID");
             header.createCell(1).setCellValue("IR_SCREEN_NAME");
             header.createCell(2).setCellValue("IR_SITENAME");
@@ -402,9 +414,6 @@ public class CountSensitiveWords {
                 z++;
             }
             bugNum = bugNum + list.size();
-            System.out.println("");
-//				}
-//			}
             header.createCell(6).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
 
         } else if ("Y_ID".equals(column) || "id".equals(column)) {
@@ -446,15 +455,15 @@ public class CountSensitiveWords {
         //向指定文件写入内容
         try {
             wb.write(fos);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
+            fos.flush();
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                fos.close();
+            }
         }
-//        main0(null);
     }
 
     /**
@@ -467,40 +476,24 @@ public class CountSensitiveWords {
         String[] filePath = {DBConfig.biaodashi};
         //使用数据库的的列来区分数据库
         String column = ConcatSiteName.getColumnName(serverTable);
-        String column3 = ConcatSiteName.getColumnName3(serverTable);
+        String columnname = "";
         //增加数据库的判断
         if ("IR_HKEY".equals(column)) {
-            //增加敏感词的map集合
-            HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "微信名称";
-            //创建表格
-            CreateTable.create(serverTable, columnname, hashMapSpecialAll);
+            columnname = "微信名称";
         } else if ("IR_CREATED_AT".equals(column)) {
-            //增加敏感词的map集合
-            HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "微博名称";
-            //创建表格
-            CreateTable.create(serverTable, columnname, hashMapSpecialAll);
+            columnname = "微博名称";
         } else if ("IR_SID".equals(column)) {            //增加微博库的类型
-            HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "网站名称";
-            //创建表格
-            CreateTable.create(serverTable, columnname, hashMapSpecialAll);
+            columnname = "网站名称";
         } else if ("FileName".equals(column)) {
-            HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "ip名称";
-            //创建表格
-            CreateTable.create(serverTable, columnname, hashMapSpecialAll);
+            columnname = "ip名称";
         } else if ("id".equals(column)) {
-            HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "表名称";
-            //创建表格
-            CreateTable.create(serverTable, columnname, hashMapSpecialAll);
+            columnname = "表名称";
         } else if ("Y_ID".equals(column)) {
-            HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
-            String columnname = "表名称";
-            //创建表格
-            CreateTable.create(serverTable, columnname, hashMapSpecialAll);
+            columnname = "表名称";
         }
+        //增加敏感词的map集合
+        HashMap<String, Integer> hashMapSpecialAll = ConcatSiteName.getSpecialSiteName(serverTable, getSensitiveWords(filePath[0]));
+        //创建表格
+        CreateTable.create(serverTable, columnname, hashMapSpecialAll);
     }
 }
