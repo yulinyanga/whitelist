@@ -65,19 +65,7 @@
 
     function exportData() {
         if ($("#userName").val() != null && $("#userName").val() != "" && $("#userName").val().trim() != null && $("#userName").val().trim() != "") {
-            $('#loading').show();
-            $.ajax({
-                type: "POST",
-                url: "<%=basePath %>exportData",
-                data: $("#exportForm").serialize(),
-                success: function (result) {
-                    if(result=="true"||result.equals("true")){
-                        $('#loading').hide();
-                    }else{
-                        alert("导出失败！");
-                    }
-                }
-            });
+            $("#exportForm").submit();
         } else {
             alert("用户名不能为空！");
         }
