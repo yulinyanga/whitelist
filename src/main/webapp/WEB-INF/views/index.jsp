@@ -22,11 +22,11 @@
 <div style="margin-left: 60px;">
     <form id="exportForm" action="<%=basePath %>exportData">
         <br>
-        <span style="width: 20px;">用户名：</span>
+        <span style="width: 20px;">用户名：&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <input id="userName" type="text" name="userName"/>
         <span style="color: red;">（*必填）</span>
         <br><br>
-        <span style="width: 20px;">关键词：</span>
+        <span style="width: 20px;">关键词：&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <textarea name="keyWord" style="height: 160px;width: 400px;"></textarea>
         <span style="color: red;">（提示：请将关键词用英文逗号隔开填入框内。）</span>
         <br><br>
