@@ -11,7 +11,7 @@
 <html lang="zh-cn">
 <head>
     <meta charset="utf-8"/>
-    <title>CONNC</title>
+    <title>CNOOC</title>
     <link rel="stylesheet" href="js/layui/css/layui.css" media="all">
     <script src="js/jquery-2.1.1.min.js"></script>
     <script src="js/jquery.min.js"></script>
@@ -98,18 +98,17 @@
             , elem: '#whitelist' //指定原始元素，默认直接查找class="layui-upload-file"
             , method: 'POST' //上传接口的http类型
             , success: function (res) {
+                console.log(res);
                 if (res.code == 1) {
                     layer.open({
                         title: '提示'
                         , content: '导入成功'
                     });
-                    documentinfoinit();
                 } else {
                     layer.open({
                         title: '提示'
                         , content: res.message
                     });
-                    documentinfoinit();
                 }
 
             }
