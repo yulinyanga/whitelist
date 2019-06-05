@@ -293,7 +293,7 @@ public class CountSensitiveWords {
             exp = DBConfig.biaodashi;
         }
         if ("IR_HKEY".equals(column)) {
-            List<WeiXin> list = new ArrayList<>();
+            List<WeiXin> list;
             header.createCell(0).setCellValue("序号");
             header.createCell(1).setCellValue("微信id");
             header.createCell(2).setCellValue("作者名");
@@ -307,7 +307,10 @@ public class CountSensitiveWords {
 //            list = csw.searchMessage(serverTable, "IR_HKEY=% OR IR_CONTENT=%" + getSensitiveWords(filePath[0]) + "%", false);
             for (int z = 1; z < list.size() + 1; z++) {
                 WeiXin weiXin = list.get(z - 1);
-                if (whiteMap.get(weiXin.getIR_URLNAME()) != null) continue;
+                if (whiteMap.get(weiXin.getIR_URLNAME()) != null) {
+
+                    continue;
+                }
                 q = q + 1;
                 XSSFRow header2 = sheet.createRow(q);
                 header2.createCell(0).setCellValue(q);
@@ -319,7 +322,7 @@ public class CountSensitiveWords {
                 header2.createCell(4).setCellValue(weiXin.getKeyword());
             }
             bugNum = bugNum + list.size();
-            header.createCell(5).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + (list.size() - 1));
+            header.createCell(5).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + q);
         } else if ("IR_SID".equals(column)) {
             List<SpecialWord> list;
             header.createCell(0).setCellValue("序号");
@@ -363,7 +366,7 @@ public class CountSensitiveWords {
                 header2.createCell(7).setCellValue(date);
             }
             bugNum = bugNum + list.size();
-            header.createCell(8).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + (list.size() - 1));
+            header.createCell(8).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + q);
 
         } else if ("FileName".equals(column)) {
             List<FIleModel> list;
@@ -385,7 +388,7 @@ public class CountSensitiveWords {
                 header2.createCell(3).setCellValue(fIleModel.getKey());
             }
             bugNum = bugNum + list.size();
-            header.createCell(4).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
+            header.createCell(4).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + q);
 
         } else if ("IR_CREATED_AT".equals(column)) {//增加微博库的类型
             List<WeiBo> list;
@@ -399,7 +402,7 @@ public class CountSensitiveWords {
             int q = 0;
             list = csw.searchMessage(serverTable, exp, false);
             //list = csw.searchMessage(serverTable,"IR_SITENAME=(海油螺号,图说海油) and IR_STATUS_CONTENT=%"+getSensitiveWords(filePath[i])+"%",false);
-            for (int z = 1; z < list.size() + 1; ) {
+            for (int z = 1; z < list.size() + 1; z++) {
                 WeiBo weiBo = list.get(z - 1);
                 //去除白名单
                 if (whiteMap.get(weiBo.getIR_URLNAME()) != null) continue;
@@ -411,10 +414,10 @@ public class CountSensitiveWords {
                 header2.createCell(3).setCellValue(weiBo.getIR_URLNAME());
                 header2.createCell(4).setCellValue(weiBo.getIR_STATUS_CONTENT());
                 header2.createCell(5).setCellValue(weiBo.getKeyword());
-                z++;
+
             }
             bugNum = bugNum + list.size();
-            header.createCell(6).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
+            header.createCell(6).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + q);
 
         } else if ("Y_ID".equals(column) || "id".equals(column)) {
             List<JCMS> list = null;
@@ -439,7 +442,7 @@ public class CountSensitiveWords {
                 header2.createCell(5).setCellValue(jcms.getKeyword());
             }
             bugNum = bugNum + list.size();
-            header.createCell(6).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + bugNum);
+            header.createCell(6).setCellValue("记录数总量: " + CountTotalRecordNum.getDataNumAll(serverTable) + "   异常数量为:" + q);
         }
         //设置列的宽度
         for (int i = 0; i < header.getPhysicalNumberOfCells(); i++) {
